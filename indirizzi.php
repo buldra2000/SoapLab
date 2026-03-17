@@ -24,41 +24,30 @@ $result = $stmt->get_result();
     <title>SoapLab - Indirizzi Associati</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; text-align: center; }
-        
         header { background: #fff; padding: 20px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; text-align: left; }
         header h1 { margin: 0; font-size: 22px; color: #333; }
-
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        
-        /* Titolo centrato e senza bordo a tutta larghezza */
         h2 { color: #444; margin-bottom: 30px; padding-bottom: 10px; display: inline-block; border-bottom: 2px solid #ddd; }
-
-        /* Griglia centrata */
         .address-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 20px; 
             justify-content: center; 
         }
-
         .address-card {
             background: white;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             border: 1px solid #eee;
-            /* Flexbox verticale per centrare il contenuto della card */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-
         .address-details { margin-bottom: 20px; }
         .address-details p { margin: 5px 0; color: #555; line-height: 1.4; }
         .address-details strong { color: #222; font-size: 1.2em; display: block; margin-bottom: 8px; }
-
-        /* Pulsante Elimina centrato */
         .btn-delete {
             background-color: #ffeded;
             color: #dc3545;
@@ -71,9 +60,7 @@ $result = $stmt->get_result();
             border: 1px solid #ffcccc;
         }
         .btn-delete:hover { background-color: #dc3545; color: white; }
-
         .add-section { margin-top: 40px; }
-        
         .btn-add-new {
             background-color: #28a745;
             color: white;
@@ -87,7 +74,6 @@ $result = $stmt->get_result();
             box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
         }
         .btn-add-new:hover { background-color: #218838; transform: translateY(-2px); }
-
         .back-link { display: block; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: 500; }
     </style>
 </head>

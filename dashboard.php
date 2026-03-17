@@ -168,6 +168,48 @@ $indirizzo = $res_addr->fetch_assoc();
         .btn-delete:hover { background: #dc3545; color: white; }
         
         .back-link { display: block; margin-top: 20px; text-decoration: none; color: #007bff; }
+
+        /* Sezione Ordini */
+.orders-section { 
+    max-width: 1000px; 
+    margin: 40px auto; 
+    padding: 0 20px; 
+}
+
+.order-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eee;
+}
+
+.order-info { text-align: left; }
+.order-info strong { color: #333; display: block; margin-bottom: 5px; }
+.order-info span { color: #777; font-size: 14px; }
+
+.order-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-spedito { background: #e3f2fd; color: #0d47a1; }
+.status-consegnato { background: #e8f5e9; color: #1b5e20; }
+.status-elaborazione { background: #fff3e0; color: #e65100; }
+
+.btn-details {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
     </style>
 </head>
 <body>
@@ -228,6 +270,33 @@ $indirizzo = $res_addr->fetch_assoc();
     <a href="index.php" class="back-link">← Torna alla Home</a>
 </div>
 
+<div class="orders-section">
+    <h2 style="text-align: center">I miei ordini</h2>
+    
+    <div class="order-card">
+        <div class="order-info">
+            <strong>Ordine #12345 - Sapone Lavanda Bio</strong>
+            <span>Data: 15/03/2026 | Totale: €12.50</span>
+        </div>
+        <div>
+            <span class="order-status status-spedito">In Spedizione</span>
+        </div>
+        <a href="ordine-dettaglio.php?id=12345" class="btn-details">Vedi dettagli →</a>
+    </div>
+
+    <div class="order-card">
+        <div class="order-info">
+            <strong>Ordine #12340 - Kit Agrumi</strong>
+            <span>Data: 10/03/2026 | Totale: €22.00</span>
+        </div>
+        <div>
+            <span class="order-status status-consegnato">Consegnato</span>
+        </div>
+        <a href="ordine-dettaglio.php?id=12340" class="btn-details">Vedi dettagli →</a>
+    </div>
+    
+    <?php /* if ($count_ordini == 0) echo '<p style="text-align:center; color:#999;">Non hai ancora effettuato ordini.</p>'; */ ?>
+</div>
 <h2 style="text-align: center">Il mio account</h2>
     <div class="account-info">
         <div class="info-row">
@@ -243,6 +312,7 @@ $indirizzo = $res_addr->fetch_assoc();
             <span><?php echo htmlspecialchars($user['email']); ?></span>
         </div>
 </div>
+
 
 <div class="info-row" style="padding: 2% 20% 0 20%">
     <span class="label">I miei indirizzi:</span>
@@ -266,6 +336,7 @@ $indirizzo = $res_addr->fetch_assoc();
         ?>
     </span>
 </div>
+
 
         <div class="actions">
             <a href="db/logout-process.php" class="btn btn-logout">Logout</a>
