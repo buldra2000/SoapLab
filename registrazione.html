@@ -147,8 +147,12 @@
     <h1>SoapLab<span class="brand-dot">.</span></h1>
     <p>Crea il tuo account ricercatore</p>
 
-    <form action="register-process.php" method="POST">
+    <form action="db/register-process.php" method="POST">
         <div class="form-row">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Mario99" required>
+            </div>
             <div class="form-group">
                 <label for="name">Nome</label>
                 <input type="text" id="name" name="name" placeholder="Mario" required>
