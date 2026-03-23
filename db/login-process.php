@@ -1,40 +1,60 @@
 <?php
-session_start(); //Log utente per le pagine
-require_once 'db.php';
+session_start();
+require_once 'db.php'; // Assicurati che il percorso del file di connessione sia corretto
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username_input = $_POST['username'];
-    $password_input = $_POST['password'];
+    // 1. Recupera l'email e la password inviate dal form HTML
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-    // 1. Cerchiamo l'utente nel database tramite username
-    $sql = "SELECT id, username, password FROM utenti WHERE username = ?";
+    // 2. Prepara la query cercando l'utente tramite la sua email
+    // Nota: recuperiamo idUtente, non più id
+    $sql = "SELECT idUtente, password, statoVendita FROM utenti WHERE email = ?";
     $stmt = $conn->prepare($sql);
     
-    if ($stmt) {
-        $stmt->bind_param("s", $username_input);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        // 2. Verifichiamo se l'utente esiste
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-
-            // 3. Confrontiamo la password inserita con quella criptata nel DB
-            if (password_verify($password_input, $user['password'])) {
-                // Password corretta! Salviamo i dati in sessione
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-
-                echo "Login effettuato! Benvenuto, " . $user['username'];
-                header("Location: ../index.php");
-            } else {
-                echo "Password errata.";
-            }
-        } else {
-            echo "Username non trovato.";
-        }
-        $stmt->close();
+    if (!$stmt) {
+        die("Errore di preparazione: " . $conn->error);
     }
-    $conn->close();
+
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // 3. Verifica se l'email esiste nel database
+    if ($user = $result->fetch_assoc()) {
+        
+        // 4. Verifica della password 
+        // Se nel file di registrazione usi password_hash(), qui devi usare password_verify()
+        // Se per ora stai salvando le password in chiaro, usa: if ($password === $user['password'])
+        if (password_verify($password, $user['password'])) {
+            
+            // (Opzionale ma consigliato) Controlla se l'utente è stato bloccato dall'admin
+            if ($user['statoVendita'] === 'bloccato') {
+                // Se vuoi impedire del tutto il login agli utenti bloccati
+                // header("Location: ../login.html?error=blocked");
+                // exit();
+            }
+
+            // 5. Login effettuato con successo: salviamo l'idUtente in sessione
+            $_SESSION['user_id'] = $user['idUtente'];
+            
+            // Reindirizziamo alla dashboard
+            header("Location: ../dashboard.php");
+            exit();
+            
+        } else {
+            // Password errata
+            header("Location: ../login.html?error=wrongpassword");
+            exit();
+        }
+    } else {
+        // L'email non è presente nel database
+        header("Location: ../login.html?error=usernotfound");
+        exit();
+    }
+} else {
+    // Accesso diretto alla pagina non consentito
+    header("Location: ../login.html");
+    exit();
 }
 ?>

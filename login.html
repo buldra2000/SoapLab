@@ -6,8 +6,8 @@
     <title>Login | SoapLab</title>
     <style>
         :root {
-            --primary-color: #2d3436; /* Grigio scuro/Antracite molto moderno */
-            --accent-color: #00cec9;  /* Un tocco di turchese "pulito" */
+            --primary-color: #2d3436; 
+            --accent-color: #00cec9;  
             --bg-color: #f0f2f5;
         }
 
@@ -124,8 +124,8 @@
 
     <form action="db/login-process.php" method="POST">
         <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Inserisci il tuo nome utente" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
         </div>
 
         <div class="form-group">
@@ -136,8 +136,9 @@
         <button type="submit">Entra nel Lab</button>
     </form>
 
-    <div class="footer-links">
-        <a href="index.html">Torna al sito</a> &nbsp; • &nbsp; <a href="#">Supporto</a>
+    <div class="footer-links" style="text-align: center; margin-top: 20px;">
+        <span style="padding-right: 30px;">Non hai un account?</span> 
+        <a href="registrazione.html" style="text-decoration: underline;">Crea un account</a>
     </div>
 </div>
 

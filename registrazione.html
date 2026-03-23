@@ -20,7 +20,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0; /* Spazio extra per mobile */
+            padding: 20px 0;
         }
 
         .register-card {
@@ -33,126 +33,47 @@
             text-align: center;
         }
 
-        .register-card h1 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            font-size: 2rem;
-            letter-spacing: -1px;
-        }
-
-        .register-card p {
-            color: #b2bec3;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 1.2rem;
-        }
-
-        .form-group {
-            text-align: left;
-            flex: 1;
-            margin-bottom: 1.2rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.4rem;
-            color: var(--primary-color);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        input {
-            width: 100%;
+        .register-card h1 { color: var(--primary-color); margin-bottom: 0.5rem; font-size: 2rem; }
+        .register-card p { color: #b2bec3; margin-bottom: 2rem; font-size: 0.95rem; }
+        
+        /* Stile per il box di errore */
+        .error-box {
+            display: none;
+            background-color: #ffebee;
+            color: #c62828;
             padding: 12px;
-            border: 2px solid #dfe6e9;
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background-color: #fff;
-        }
-
-        .checkbox-group {
-            text-align: left;
-            margin: 1.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-            color: #636e72;
-        }
-
-        .checkbox-group input {
-            width: auto;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
+            border: 1px solid #ffcdd2;
         }
 
-        button:hover {
-            background-color: #1e272e;
-            transform: translateY(-2px);
-        }
-
-        .footer-links {
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            border-top: 1px solid #f1f2f6;
-            padding-top: 1.5rem;
-        }
-
-        .footer-links a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .brand-dot {
-            color: var(--accent-color);
-        }
-
-        @media (max-width: 480px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
+        .form-row { display: flex; gap: 15px; margin-bottom: 1.2rem; }
+        .form-group { text-align: left; flex: 1; margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.4rem; color: var(--primary-color); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; border: 2px solid #dfe6e9; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
+        input:focus { outline: none; border-color: var(--accent-color); }
+        .checkbox-group { text-align: left; margin: 1.5rem 0; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+        .checkbox-group input { width: auto; }
+        
+        button { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        button:hover { background-color: #1e272e; }
+        .footer-links { margin-top: 2rem; font-size: 0.85rem; border-top: 1px solid #f1f2f6; padding-top: 1.5rem; }
+        .footer-links a { color: var(--accent-color); text-decoration: none; font-weight: 600; }
+        .brand-dot { color: var(--accent-color); }
     </style>
 </head>
 <body>
 
 <div class="register-card">
     <h1>SoapLab<span class="brand-dot">.</span></h1>
-    <p>Crea il tuo account ricercatore</p>
+    <p>Crea il tuo account SoapLab</p>
+
+    <div id="error-message" class="error-box"></div>
 
     <form action="db/register-process.php" method="POST">
         <div class="form-row">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Mario99" required>
-            </div>
             <div class="form-group">
                 <label for="name">Nome</label>
                 <input type="text" id="name" name="name" placeholder="Mario" required>
@@ -164,7 +85,7 @@
         </div>
 
         <div class="form-group">
-            <label for="email">Email Universitaria / Lab</label>
+            <label for="email">Email</label>
             <input type="email" id="email" name="email" placeholder="mario.rossi@soaplab.it" required>
         </div>
 
@@ -192,6 +113,28 @@
         Hai già un account? <a href="login.html">Accedi qui</a>
     </div>
 </div>
+
+<script>
+    // Legge i parametri dall'URL (es: ?error=email_exists)
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const errorBox = document.getElementById('error-message');
+
+    if (error) {
+        errorBox.style.display = 'block'; // Rende visibile il box
+        
+        // Personalizza il messaggio in base al tipo di errore
+        if (error === 'email_exists') {
+            errorBox.innerText = 'Questa email è già registrata. Prova ad accedere.';
+        } else if (error === 'password_mismatch') {
+            errorBox.innerText = 'Le password non coincidono. Riprova.';
+        } else if (error === 'insert_failed') {
+            errorBox.innerText = 'Errore durante la registrazione. Riprova più tardi.';
+        } else {
+            errorBox.innerText = 'Si è verificato un errore.';
+        }
+    }
+</script>
 
 </body>
 </html>

@@ -1,7 +1,13 @@
 <?php
+// Mostra errori per aiutarti nel debug
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require_once 'db/db.php';
 
+// 1. Controllo sessione
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -9,11 +15,24 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT * FROM indirizzi WHERE utente_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+// 2. RECUPERO DATI UTENTE (Rimosso username, usato idUtente)
+$sql_user = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
+$stmt_user = $conn->prepare($sql_user);
+$stmt_user->bind_param("i", $user_id);
+$stmt_user->execute();
+$res_user = $stmt_user->get_result();
+$user = $res_user->fetch_assoc();
+
+if (!$user) {
+    die("Errore: Utente non trovato.");
+}
+
+// 3. RECUPERO INDIRIZZI (Usato idUtente come Foreign Key fedele al diagramma)
+$sql_addr = "SELECT * FROM indirizzi WHERE idUtente = ?";
+$stmt_addr = $conn->prepare($sql_addr);
+$stmt_addr->bind_param("i", $user_id);
+$stmt_addr->execute();
+$result = $stmt_addr->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -21,99 +40,82 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoapLab - Indirizzi Associati</title>
+    <link rel="stylesheet" href="css/global.css">
+    <title>SoapLab - I miei indirizzi</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; text-align: center; }
-        header { background: #fff; padding: 20px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; text-align: left; }
-        header h1 { margin: 0; font-size: 22px; color: #333; }
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        h2 { color: #444; margin-bottom: 30px; padding-bottom: 10px; display: inline-block; border-bottom: 2px solid #ddd; }
-        .address-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-            justify-content: center; 
-        }
-        .address-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .address-details { margin-bottom: 20px; }
-        .address-details p { margin: 5px 0; color: #555; line-height: 1.4; }
-        .address-details strong { color: #222; font-size: 1.2em; display: block; margin-bottom: 8px; }
-        .btn-delete {
-            background-color: #ffeded;
-            color: #dc3545;
-            padding: 8px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: bold;
-            transition: 0.3s;
-            border: 1px solid #ffcccc;
-        }
+        /* Contenuto */
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; text-align: center; }
+        h2 { color: #444; margin-bottom: 30px; padding-bottom: 10px; display: inline-block; border-bottom: 2px solid #28a745; }
+        
+        .address-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        
+        .address-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; transition: 0.3s; }
+        .address-card:hover { transform: translateY(-5px); }
+
+        .address-details strong { color: #222; font-size: 1.1em; display: block; margin-bottom: 10px; }
+        .address-details p { margin: 5px 0; color: #666; }
+
+        .btn-delete { display: inline-block; margin-top: 15px; background-color: #fff; color: #dc3545; padding: 8px 16px; border: 1px solid #dc3545; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; transition: 0.2s; }
         .btn-delete:hover { background-color: #dc3545; color: white; }
+
         .add-section { margin-top: 40px; }
-        .btn-add-new {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-            display: inline-block;
-            transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
-        }
-        .btn-add-new:hover { background-color: #218838; transform: translateY(-2px); }
-        .back-link { display: block; margin-top: 25px; color: #007bff; text-decoration: none; font-weight: 500; }
+        .btn-add-new { background-color: #28a745; color: white; padding: 15px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; }
+        .back-link { display: block; margin-top: 25px; color: #007bff; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>SoapLab</h1>
-    <a href="dashboard.php" style="text-decoration: none; color: #007bff;">Dashboard</a>
-</header>
+    <header>
+        <h1>SoapLab</h1>
+        <div class="dropdown">
+            <div class="user-icon">👤</div>
+            <div class="dropdown-content">
+                <a href="index.php" style="text-align: center; background: #f8f9fa;">
+                    <strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong>
+                </a>
+                <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
+                    🧼 Vendi un sapone
+                </a>
+                <a href="dashboard.php">La mia dashboard</a>
+                <a href="indirizzi.php">I miei indirizzi</a>
+                <a href="settings.php">Impostazioni</a>
+                <a href="db/logout-process.php" style="color: #dc3545; border-top: 1px solid #eee;">Logout</a>
+            </div>
+        </div>
+    </header>
 
-<div class="container">
-    <h2>Indirizzi associati</h2>
+    <div class="container">
+        <h2>I tuoi indirizzi di spedizione</h2>
 
-    <div class="address-grid">
-        <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-                <div class="address-card">
-                    <div class="address-details">
-                        <p><strong><?php echo htmlspecialchars($row['via']); ?></strong></p>
-                        <p><?php echo htmlspecialchars($row['città']); ?> (<?php echo htmlspecialchars($row['provincia']); ?>)</p>
-                        <p>CAP: <?php echo htmlspecialchars($row['cap']); ?></p>
+        <div class="address-grid">
+            <?php if ($result->num_rows > 0): ?>
+                <?php while($row = $result->fetch_assoc()): ?>
+                    <div class="address-card">
+                        <div class="address-details">
+                            <strong><?php echo htmlspecialchars($row['via'] . ', ' . $row['numeroCivico']); ?></strong>
+                            <p><?php echo htmlspecialchars($row['citta']); ?></p>
+                            <p>CAP: <?php echo htmlspecialchars($row['cap']); ?></p>
+                        </div>
+                        
+                        <a href="db/delete-address.php?id=<?php echo $row['idIndirizzo']; ?>" 
+                           class="btn-delete" 
+                           onclick="return confirm('Vuoi davvero eliminare questo indirizzo?');">
+                           Elimina
+                        </a>
                     </div>
-                    
-                    <a href="db/delete-address.php?id=<?php echo $row['id']; ?>" 
-                       class="btn-delete" 
-                       onclick="return confirm('Sei sicuro di voler eliminare questo indirizzo?');">
-                       Elimina
-                    </a>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <div style="grid-column: 1/-1; padding: 40px; background: #fff; border-radius: 12px; color: #888;">
+                    <p>Non hai ancora salvato nessun indirizzo.</p>
                 </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p style="grid-column: 1/-1; color: #888;">Nessun indirizzo trovato. Aggiungine uno qui sotto.</p>
-        <?php endif; ?>
-    </div>
+            <?php endif; ?>
+        </div>
 
-    <div class="add-section">
-        <a href="aggiungi-indirizzo.php" class="btn-add-new">+ Aggiungi un nuovo indirizzo</a>
-        <a href="dashboard.php" class="back-link">← Torna alla Dashboard</a>
+        <div class="add-section">
+            <a href="aggiungi-indirizzo.php" class="btn-add-new">+ Aggiungi un nuovo indirizzo</a>
+            <a href="dashboard.php" class="back-link">← Torna alla Dashboard</a>
+        </div>
     </div>
-</div>
 
 </body>
 </html>

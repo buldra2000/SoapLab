@@ -1,8 +1,12 @@
 <?php
-session_start();
-require_once 'db/db.php'; // Il tuo file di connessione
+// Mostra errori per aiutarti nel debug (toglili in produzione!)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Se non è loggato, lo rispediamo al login
+session_start();
+require_once 'db/db.php'; 
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -10,28 +14,23 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Prepariamo la query per prendere i dati reali
-$sql = "SELECT username, nome, cognome, email FROM utenti WHERE id = ?";
+// 1. Modifica query: tolto 'username', cambiato 'id' in 'idUtente'
+$sql = "SELECT nome, cognome, email, statoVendita FROM utenti WHERE idUtente = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Salviamo i dati reali in una variabile $user
 if ($user = $result->fetch_assoc()) {
-    // Dati trovati con successo
+    // Dati caricati
 } else {
-    die("Errore: Utente non trovato nel database.");
+    die("Errore: Utente non trovato.");
 }
 
-// Recuperiamo l'indirizzo dell'utente dalla tabella 'indirizzi'
-$sql_addr = "SELECT via, città, cap, provincia FROM indirizzi WHERE utente_id = ? LIMIT 1";
-$stmt_addr = $conn->prepare($sql_addr);
-$stmt_addr->bind_param("i", $user_id);
-$stmt_addr->execute();
-$res_addr = $stmt_addr->get_result();
-$indirizzo = $res_addr->fetch_assoc();
-
+// Inizializzazione variabili statistiche (da popolare con query reali nel tuo progetto)
+$vendite = 0; 
+$acquisti = 0;
+$rating = 4; 
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -40,7 +39,7 @@ $indirizzo = $res_addr->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - SoapLab</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
 
         /* Header Styling */
         header {
@@ -48,302 +47,122 @@ $indirizzo = $res_addr->fetch_assoc();
             padding: 10px 40px;
             display: flex;
             align-items: center;
-            justify-content:间; /* Distribuisce gli spazi tra gli elementi */
+            justify-content: space-between; /* 2. Corretto il carattere cinese qui */
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        h1 { 
-            margin: 0; 
-            font-size: 24px; 
-            color: #333;
-            flex-grow: 1; /* Fa sì che il titolo occupi lo spazio rimanente */
-        }
+        h1 { margin: 0; font-size: 24px; color: #333; flex-grow: 1; }
 
-        /* Dropdown Container */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        /* Dropdown Style */
+        .dropdown { position: relative; display: inline-block; }
 
-        /* Simbolo Utente */
         .user-icon {
-            font-size: 22px;
-            cursor: pointer;
-            padding: 8px;
-            background: #f0f0f0;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
+            font-size: 20px; cursor: pointer; padding: 8px; background: #f0f0f0;
+            border-radius: 50%; width: 35px; height: 35px; display: flex;
+            align-items: center; justify-content: center; transition: 0.3s;
         }
-
         .user-icon:hover { background: #e0e0e0; }
 
-        /* Contenuto del Menu (Allineato a destra) */
         .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0; /* Lo ancora al bordo destro del simbolo */
-            background-color: #ffffff;
-            min-width: 180px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
-            z-index: 100;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #eee;
+            display: none; position: absolute; right: 0; background-color: #fff;
+            min-width: 200px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+            z-index: 100; border-radius: 8px; overflow: hidden; border: 1px solid #eee;
         }
 
         .dropdown-content a {
-            color: #444;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            transition: background 0.2s;
+            color: #444; padding: 12px 16px; text-decoration: none;
+            display: block; font-size: 14px; transition: 0.2s;
         }
 
-        .dropdown-content a:hover { background-color: #f8f9fa; color: #007bff; }
+        .dropdown-content a:hover { background-color: #f8f9fa; color: #28a745; }
 
-        /* Mostra il menu al passaggio del mouse */
         .dropdown:hover .dropdown-content { display: block; }
 
-        .logout-link { border-top: 1px solid #eee; color: #dc3545 !important; }
-
+        /* Dashboard Layout */
         .container { padding: 40px; max-width: 1000px; margin: auto; }
-
-        h2 { margin-bottom: 30px; }
-
-        /* Griglia delle Card */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
-        .card:hover { transform: translateY(-5px); }
-
-        .card h3 { margin: 0; color: #666; font-size: 16px; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
+        .card .value { font-size: 32px; font-weight: bold; color: #28a745; margin: 10px 0; }
         
-        .card .value { 
-            font-size: 32px; 
-            font-weight: bold; 
-            margin: 15px 0; 
-            color: #007bff; 
-        }
+        .account-info { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f9f9f9; }
+        .label { font-weight: bold; color: #777; }
 
-        /* Stelle delle recensioni */
-        .stars { color: #ffc107; font-size: 24px; }
-        .star-empty { color: #e4e4e4; }
+        .btn { padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; cursor: pointer; display: inline-block; }
+        .btn-logout { background: #6c757d; color: white; margin-top: 20px; }
+        .btn-delete { background: #fee; color: #dc3545; border: none; margin-left: 10px; }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        /* Sezione Account */
-        .account-info { background: #f4f7f6; padding: 30px; border-radius: 12px; padding: 0 20% 0 20%;}
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0;}
-        .info-row:last-child { border-bottom: none; }
-        .label { font-weight: bold; color: #666; }
-        
-        /* Bottoni */
-        .actions { margin-top: 30px; display: flex; gap: 15px; justify-content: center}
-        .btn { padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-logout { background: #6c757d; color: white; }
-        .btn-delete { background: #fee; color: #dc3545; }
-        .btn-delete:hover { background: #dc3545; color: white; }
-        
-        .back-link { display: block; margin-top: 20px; text-decoration: none; color: #007bff; }
-
-        /* Sezione Ordini */
-.orders-section { 
-    max-width: 1000px; 
-    margin: 40px auto; 
-    padding: 0 20px; 
-}
-
-.order-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #eee;
-}
-
-.order-info { text-align: left; }
-.order-info strong { color: #333; display: block; margin-bottom: 5px; }
-.order-info span { color: #777; font-size: 14px; }
-
-.order-status {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.status-spedito { background: #e3f2fd; color: #0d47a1; }
-.status-consegnato { background: #e8f5e9; color: #1b5e20; }
-.status-elaborazione { background: #fff3e0; color: #e65100; }
-
-.btn-details {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-}
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-attivo { background: #e8f5e9; color: #2e7d32; }
+        .status-bloccato { background: #ffebee; color: #c62828; }
     </style>
 </head>
 <body>
 
-<header>
+    <header>
         <h1>SoapLab</h1>
-
         <div class="dropdown">
             <div class="user-icon">👤</div>
             <div class="dropdown-content">
-                <?php if (isset($_SESSION['username'])): ?>
-                    <a href="index.php" style="text-align: center"><strong><?php echo $_SESSION['username']; ?></strong></a>
-                    <a href="dashboard.php">La mia dashboard</a>
-                    <a href="indirizzi.php">I miei indirizzi</a>
-                    <a href="settings.php">Impostazioni</a>
-                    <a href="db/logout.php" class="logout-link" style="text-align: center">Logout</a>
-                <?php else: ?>
-                    <a href="login.html">Accedi</a>
-                    <a href="registrazione.html">Registrati</a>
+                <a href="index.php" style="text-align: center; background: #f8f9fa;">
+                    <strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong>
+                </a>
+                
+                <?php if ($user['statoVendita'] !== 'bloccato'): ?>
+                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
+                        🧼 Vendi un sapone
+                    </a>
                 <?php endif; ?>
+
+                <a href="dashboard.php">La mia dashboard</a>
+                <a href="indirizzi.php">I miei indirizzi</a>
+                <a href="settings.php">Impostazioni</a>
+                <a href="db/logout-process.php" style="color: #dc3545; border-top: 1px solid #eee;">Logout</a>
             </div>
         </div>
     </header>
 
-<div class="container">
-    <h2>Benvenuto nel tuo pannello di controllo</h2>
+    <div class="container">
+        <h2>Benvenuto, <?php echo htmlspecialchars($user['nome']); ?>!</h2>
 
-    <div class="grid">
-        <div class="card">
-            <h3>Vendite</h3>
-            <div class="value"><?php echo $vendite; ?></div>
-            <p>Ordini completati</p>
-        </div>
-
-        <div class="card">
-            <h3>Acquisti</h3>
-            <div class="value"><?php echo $acquisti; ?></div>
-            <p>Prodotti ricevuti</p>
-        </div>
-
-        <div class="card">
-            <h3>Recensioni</h3>
-            <div class="stars">
-                <?php 
-                for ($i = 1; $i <= 5; $i++) {
-                    if ($i <= $rating) {
-                        echo "★";
-                    } else {
-                        echo "<span class='star-empty'>★</span>";
-                    }
-                }
-                ?>
+        <div class="grid">
+            <div class="card">
+                <h3>Vendite</h3>
+                <div class="value"><?php echo $vendite; ?></div>
+                <p>Prodotti venduti</p>
             </div>
-            <p>Valutazione media</p>
+            <div class="card">
+                <h3>Acquisti</h3>
+                <div class="value"><?php echo $acquisti; ?></div>
+                <p>Ordini effettuati</p>
+            </div>
+            <div class="card">
+                <h3>Stato Venditore</h3>
+                <div style="margin-top: 15px;">
+                    <span class="status-badge <?php echo ($user['statoVendita'] === 'bloccato') ? 'status-bloccato' : 'status-attivo'; ?>">
+                        <?php echo strtoupper($user['statoVendita'] ?? 'ATTIVO'); ?>
+                    </span>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <a href="index.php" class="back-link">← Torna alla Home</a>
-</div>
-
-<div class="orders-section">
-    <h2 style="text-align: center">I miei ordini</h2>
-    
-    <div class="order-card">
-        <div class="order-info">
-            <strong>Ordine #12345 - Sapone Lavanda Bio</strong>
-            <span>Data: 15/03/2026 | Totale: €12.50</span>
-        </div>
-        <div>
-            <span class="order-status status-spedito">In Spedizione</span>
-        </div>
-        <a href="ordine-dettaglio.php?id=12345" class="btn-details">Vedi dettagli →</a>
-    </div>
-
-    <div class="order-card">
-        <div class="order-info">
-            <strong>Ordine #12340 - Kit Agrumi</strong>
-            <span>Data: 10/03/2026 | Totale: €22.00</span>
-        </div>
-        <div>
-            <span class="order-status status-consegnato">Consegnato</span>
-        </div>
-        <a href="ordine-dettaglio.php?id=12340" class="btn-details">Vedi dettagli →</a>
-    </div>
-    
-    <?php /* if ($count_ordini == 0) echo '<p style="text-align:center; color:#999;">Non hai ancora effettuato ordini.</p>'; */ ?>
-</div>
-<h2 style="text-align: center">Il mio account</h2>
-    <div class="account-info">
-        <div class="info-row">
-            <span class="label">Username:</span>
-            <span><?php echo htmlspecialchars($user['username']); ?></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Nome completo:</span>
-            <span><?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?></span>
-        </div>
-        <div class="info-row">
-            <span class="label">Email:</span>
-            <span><?php echo htmlspecialchars($user['email']); ?></span>
-        </div>
-</div>
-
-
-<div class="info-row" style="padding: 2% 20% 0 20%">
-    <span class="label">I miei indirizzi:</span>
-    <span>
-        <?php 
-        // Controlliamo quanti indirizzi ha l'utente
-        $sql_count = "SELECT COUNT(*) as totale FROM indirizzi WHERE utente_id = ?";
-        $stmt_count = $conn->prepare($sql_count);
-        $stmt_count->bind_param("i", $user_id);
-        $stmt_count->execute();
-        $res_count = $stmt_count->get_result();
-        $count_data = $res_count->fetch_assoc();
-
-        if ($count_data['totale'] > 0) {
-            // Se ha almeno un indirizzo, mostriamo il tasto "Consulta"
-            echo '<a href="indirizzi.php" class="btn-consult">Consulta i miei indirizzi (' . $count_data['totale'] . ')</a>';
-        } else {
-            // Se non ne ha, mostriamo il tasto "Aggiungi"
-            echo '<a href="aggiungi-indirizzo.php" class="btn-add">+ Aggiungi indirizzo</a>';
-        }
-        ?>
-    </span>
-</div>
-
-
-        <div class="actions">
-            <a href="db/logout-process.php" class="btn btn-logout">Logout</a>
+        <div class="account-info">
+            <h3>I tuoi dati</h3>
+            <div class="info-row">
+                <span class="label">Email:</span>
+                <span><?php echo htmlspecialchars($user['email']); ?></span>
+            </div>
+            <div class="info-row">
+                <span class="label">Nome Completo:</span>
+                <span><?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?></span>
+            </div>
             
-            <form action="db/delete-account.php" method="POST" onsubmit="return confirm('ATTENZIONE: Sei sicuro di voler eliminare il tuo account? L\'operazione è definitiva.');">
-                <button type="submit" class="btn btn-delete">Elimina account</button>
-            </form>
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="db/logout-process.php" class="btn btn-logout">Disconnetti</a>
+                <form action="db/delete-account.php" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminare l\'account?');">Elimina Account</button>
+                </form>
+            </div>
         </div>
     </div>
 
