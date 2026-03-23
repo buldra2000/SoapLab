@@ -80,7 +80,7 @@ if (!$user) {
 
     <div class="form-container">
         <h2>Pubblica la tua inserzione</h2>
-        <form action="db/process-vendita.php" method="POST" enctype="multipart/form-data">
+        <form action="db/vendita-process.php" method="POST" enctype="multipart/form-data">
             
             <label>Titolo Inserzione</label>
             <input type="text" name="titolo" required placeholder="Es: Set Saponi Lavanda">
