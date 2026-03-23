@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SoapLab</title>
     <style>
         :root {
-            --primary-color: #2d3436; 
-            --accent-color: #00cec9;  
+            --primary-color: #2d3436;
+            --accent-color: #00cec9;
             --bg-color: #f0f2f5;
         }
 
@@ -25,7 +26,7 @@
             background: white;
             padding: 2.5rem;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
             width: 100%;
             max-width: 380px;
             text-align: center;
@@ -116,31 +117,33 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-card">
-    <h1>SoapLab<span class="brand-dot">.</span></h1>
-    <p>Accedi al tuo laboratorio digitale</p>
+    <div class="login-card">
+        <h1>SoapLab<span class="brand-dot">.</span></h1>
+        <p>Accedi al tuo laboratorio digitale</p>
 
-    <form action="db/login-process.php" method="POST">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
+        <form action="db/login-process.php" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Inserisci la tua email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit">Entra nel Lab</button>
+        </form>
+
+        <div class="footer-links" style="text-align: center; margin-top: 20px;">
+            <span style="padding-right: 30px;">Non hai un account?</span>
+            <a href="registrazione.html" style="text-decoration: underline;">Crea un account</a>
         </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
-        </div>
-
-        <button type="submit">Entra nel Lab</button>
-    </form>
-
-    <div class="footer-links" style="text-align: center; margin-top: 20px;">
-        <span style="padding-right: 30px;">Non hai un account?</span> 
-        <a href="registrazione.html" style="text-decoration: underline;">Crea un account</a>
     </div>
-</div>
 
 </body>
+
 </html>

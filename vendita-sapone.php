@@ -1,5 +1,5 @@
 <?php
-// Mostra errori per aiutarti nel debug
+//DEBUG
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,7 +7,6 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
-// Controllo sessione
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -15,7 +14,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Recuperiamo nome e cognome usando la chiave corretta idUtente
 $sql = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);

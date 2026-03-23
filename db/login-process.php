@@ -1,14 +1,11 @@
 <?php
 session_start();
-require_once 'db.php'; // Assicurati che il percorso del file di connessione sia corretto
+require_once 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // 1. Recupera l'email e la password inviate dal form HTML
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // 2. Prepara la query cercando l'utente tramite la sua email
-    // Nota: recuperiamo idUtente, non più id
     $sql = "SELECT idUtente, password, statoVendita FROM utenti WHERE email = ?";
     $stmt = $conn->prepare($sql);
     
@@ -43,17 +40,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
             
         } else {
-            // Password errata
             header("Location: ../login.html?error=wrongpassword");
             exit();
         }
     } else {
-        // L'email non è presente nel database
         header("Location: ../login.html?error=usernotfound");
         exit();
     }
 } else {
-    // Accesso diretto alla pagina non consentito
     header("Location: ../login.html");
     exit();
 }

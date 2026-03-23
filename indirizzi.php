@@ -1,5 +1,4 @@
 <?php
-// Mostra errori per aiutarti nel debug
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,7 +6,6 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
-// 1. Controllo sessione
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -15,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 2. RECUPERO DATI UTENTE (Rimosso username, usato idUtente)
 $sql_user = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $user_id);
@@ -27,7 +24,6 @@ if (!$user) {
     die("Errore: Utente non trovato.");
 }
 
-// 3. RECUPERO INDIRIZZI (Usato idUtente come Foreign Key fedele al diagramma)
 $sql_addr = "SELECT * FROM indirizzi WHERE idUtente = ?";
 $stmt_addr = $conn->prepare($sql_addr);
 $stmt_addr->bind_param("i", $user_id);
@@ -43,7 +39,6 @@ $result = $stmt_addr->get_result();
     <link rel="stylesheet" href="css/global.css">
     <title>SoapLab - I miei indirizzi</title>
     <style>
-        /* Contenuto */
         .container { max-width: 900px; margin: 40px auto; padding: 0 20px; text-align: center; }
         h2 { color: #444; margin-bottom: 30px; padding-bottom: 10px; display: inline-block; border-bottom: 2px solid #28a745; }
         

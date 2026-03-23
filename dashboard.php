@@ -41,19 +41,17 @@ $rating = 4;
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
 
-        /* Header Styling */
         header {
             background-color: #ffffff;
             padding: 10px 40px;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 2. Corretto il carattere cinese qui */
+            justify-content: space-between;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         h1 { margin: 0; font-size: 24px; color: #333; flex-grow: 1; }
 
-        /* Dropdown Style */
         .dropdown { position: relative; display: inline-block; }
 
         .user-icon {
@@ -78,7 +76,6 @@ $rating = 4;
 
         .dropdown:hover .dropdown-content { display: block; }
 
-        /* Dashboard Layout */
         .container { padding: 40px; max-width: 1000px; margin: auto; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
