@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
 }
 
 // --- RECUPERO DATI ---
-$categorie = $conn->query("SELECT * FROM categorie ORDER BY nomeCategoria ASC");
+$categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
 ?>
 <!DOCTYPE html>
 <html lang="it">

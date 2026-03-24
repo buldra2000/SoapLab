@@ -82,6 +82,7 @@ if (isset($_SESSION['user_id'])) {
                     <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
+                    <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
                     <a href="db/logout-process.php" style="color: #dc3545;">Logout</a>
                 <?php else: ?>
                     <a href="login.html">Accedi</a>

@@ -200,7 +200,7 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
                 <a href="admin-proprieta.php">✨ Proprietà</a>
                 <a href="admin-utenti.php">👥 Moderazione Utenti</a>
             </nav>
-            <a href="db/logout-process.php" class="logout">🚪 Logout</a>
+            <a href="db/logout-process.php" class="logout">🚪 Disconnetti</a>
         </div>
 
         <div class="main-content">

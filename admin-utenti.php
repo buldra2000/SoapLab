@@ -35,17 +35,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione'])) {
     }
 }
 
-// --- RECUPERO DATI E CALCOLO RECENSIONI NEGATIVE ---
-// Calcoliamo quante recensioni con voto <= 2 ha ricevuto ogni utente
+// --- RECUPERO DATI E CALCOLO RECENSIONI ---
 $sql_utenti = "
     SELECT u.idUtente, u.nome, u.cognome, u.email, u.statoVendita,
-           COUNT(r.idRecensione) AS recensioni_negative,
-           AVG(r2.voto) AS media_totale
+           -- Conta 1 solo se il voto è <= 2, altrimenti 0
+           SUM(CASE WHEN r.voto <= 2 THEN 1 ELSE 0 END) AS recensioni_negative,
+           -- Calcola la media su tutti i voti presenti
+           AVG(r.voto) AS media_totale
     FROM utenti u
-    -- Join per contare SOLO le recensioni negative (1 o 2 stelle)
-    LEFT JOIN recensioni r ON u.idUtente = r.idDestinatario AND r.voto <= 2
-    -- Join per calcolare la media totale dell'utente
-    LEFT JOIN recensioni r2 ON u.idUtente = r2.idDestinatario
+    LEFT JOIN recensioni r ON u.idUtente = r.idDestinatario
     GROUP BY u.idUtente
     ORDER BY recensioni_negative DESC, u.nome ASC
 ";

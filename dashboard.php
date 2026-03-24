@@ -93,6 +93,21 @@ if ($stmt_ord) {
     $ordini = $stmt_ord->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt_ord->close();
 }
+
+// --- 5. Recupero Le Mie Pubblicazioni ---
+$pubblicazioni = [];
+$sql_pub = "SELECT idInserzione, titolo, prezzoTotale, pesoComplessivo 
+            FROM inserzioni 
+            WHERE idUtente = ? 
+            ORDER BY idInserzione DESC";
+
+$stmt_pub = $conn->prepare($sql_pub);
+if ($stmt_pub) {
+    $stmt_pub->bind_param("i", $user_id);
+    $stmt_pub->execute();
+    $pubblicazioni = $stmt_pub->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt_pub->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -179,7 +194,7 @@ if ($stmt_ord) {
 
                 <a href="dashboard.php">La mia dashboard</a>
                 <a href="indirizzi.php">I miei indirizzi</a>
-                <a href="settings.php">Impostazioni</a>
+                <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
                 <a href="db/logout-process.php" style="color: #dc3545; border-top: 1px solid #eee;">Logout</a>
             </div>
         </div>
@@ -294,6 +309,40 @@ if ($stmt_ord) {
         </table>
     <?php else: ?>
         <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
+    <?php endif; ?>
+</div>
+
+<div class="orders-section" style="margin-top: 40px;">
+    <h3>Le mie pubblicazioni</h3>
+    <?php if (count($pubblicazioni) > 0): ?>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Titolo Inserzione</th>
+                    <th>Prezzo Totale</th>
+                    <th>Peso</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($pubblicazioni as $pub): ?>
+                    <tr>
+                        <td><strong><?php echo htmlspecialchars($pub['titolo']); ?></strong></td>
+                        <td>€<?php echo number_format($pub['prezzoTotale'], 2); ?></td>
+                        <td><?php echo $pub['pesoComplessivo']; ?>g</td>
+                        <td>
+                            <a href="inserzione.php?id=<?php echo $pub['idInserzione']; ?>" 
+                               style="color: #28a745; text-decoration: none; font-size: 13px; font-weight: bold;">
+                               🔍 Visualizza
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p style="color: #888; font-style: italic;">Non hai ancora pubblicato inserzioni. 
+        <a href="vendita-sapone.php" style="color: #28a745;">Inizia ora!</a></p>
     <?php endif; ?>
 </div>
             

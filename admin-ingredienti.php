@@ -12,9 +12,9 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// --- GESTIONE DEI FORM (INSERIMENTO DATI) ---
 $messaggio = "";
 
+// --- GESTIONE DEI FORM (INSERIMENTO DATI) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // 1. Inserimento nuovo Ingrediente
@@ -25,8 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("s", $nome);
             if ($stmt->execute()) {
                 $messaggio = "<div class='alert success'>Ingrediente aggiunto con successo!</div>";
-            } else {
-                $messaggio = "<div class='alert error'>Errore durante l'inserimento dell'ingrediente.</div>";
             }
         }
     }
@@ -39,39 +37,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("s", $nome);
             if ($stmt->execute()) {
                 $messaggio = "<div class='alert success'>Beneficio aggiunto con successo!</div>";
-            } else {
-                $messaggio = "<div class='alert error'>Errore durante l'inserimento del beneficio.</div>";
             }
         }
     }
 
-    // 3. Associazione Ingrediente - Beneficio
+    // --- NUOVO: 3. Inserimento nuovo Allergene (Requisito S1) ---
+    if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_allergene') {
+        $nome = trim($_POST['nome_allergene']);
+        $tipo = trim($_POST['tipo_allergene']);
+        if (!empty($nome)) {
+            $stmt = $conn->prepare("INSERT INTO allergeni (nomeAllergene, tipo) VALUES (?, ?)");
+            $stmt->bind_param("ss", $nome, $tipo);
+            if ($stmt->execute()) {
+                $messaggio = "<div class='alert success'>Allergene inserito nel sistema!</div>";
+            }
+        }
+    }
+
+    // 4. Associazione Ingrediente - Beneficio
     if (isset($_POST['azione']) && $_POST['azione'] == 'associa') {
         $idIng = $_POST['id_ingrediente'];
         $idBen = $_POST['id_beneficio'];
         if (!empty($idIng) && !empty($idBen)) {
-            // Verifica che l'associazione non esista già
-            $check = $conn->prepare("SELECT * FROM ingrediente_associato_beneficio WHERE idIngrediente = ? AND idBeneficio = ?");
-            $check->bind_param("ii", $idIng, $idBen);
-            $check->execute();
-            if ($check->get_result()->num_rows == 0) {
-                $stmt = $conn->prepare("INSERT INTO ingrediente_associato_beneficio (idIngrediente, idBeneficio) VALUES (?, ?)");
-                $stmt->bind_param("ii", $idIng, $idBen);
-                if ($stmt->execute()) {
-                    $messaggio = "<div class='alert success'>Associazione creata correttamente!</div>";
-                }
-            } else {
-                $messaggio = "<div class='alert error'>Questa associazione esiste già.</div>";
+            $stmt = $conn->prepare("INSERT IGNORE INTO ingrediente_associato_beneficio (idIngrediente, idBeneficio) VALUES (?, ?)");
+            $stmt->bind_param("ii", $idIng, $idBen);
+            if ($stmt->execute()) {
+                $messaggio = "<div class='alert success'>Associazione creata correttamente!</div>";
             }
         }
     }
 }
 
-// --- RECUPERO DATI PER LE SELECT E LA TABELLA ---
+// --- RECUPERO DATI ---
 $ingredienti = $conn->query("SELECT * FROM ingredienti ORDER BY nomeIngrediente ASC");
 $benefici = $conn->query("SELECT * FROM benefici ORDER BY nomeBeneficio ASC");
+$lista_allergeni = $conn->query("SELECT * FROM allergeni ORDER BY nomeAllergene ASC");
 
-// Query complessa per mostrare la tabella riassuntiva con le associazioni
 $catalogo_sql = "
     SELECT i.nomeIngrediente, GROUP_CONCAT(b.nomeBeneficio SEPARATOR ', ') as benefici_associati
     FROM ingredienti i
@@ -86,63 +87,35 @@ $catalogo = $conn->query($catalogo_sql);
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Gestione Ingredienti - SoapLab Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Gestione Catalogo - SoapLab Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --sidebar-bg: #111827; 
-            --sidebar-hover: #1F2937;
-            --accent: #10B981; 
-            --accent-hover: #059669;
-            --bg-light: #F3F4F6;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
+        /* (Manteniamo i tuoi stili CSS esistenti) */
+        :root { --sidebar-bg: #111827; --sidebar-hover: #1F2937; --accent: #10B981; --accent-hover: #059669; --bg-light: #F3F4F6; --text-main: #1F2937; --text-muted: #6B7280; --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-main); }
         .admin-layout { display: flex; min-height: 100vh; }
-        
-        /* Sidebar Styling */
         .sidebar { width: 260px; background: var(--sidebar-bg); color: #E5E7EB; display: flex; flex-direction: column; }
         .sidebar-header { padding: 30px 25px 20px 25px; border-bottom: 1px solid #374151; margin-bottom: 15px; }
-        .sidebar-header h2 { margin: 0; color: white; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-header h2 { margin: 0; color: white; font-size: 22px; font-weight: 700; }
         .sidebar-header span { color: var(--accent); }
-        .sidebar nav { flex: 1; }
         .sidebar a { display: flex; align-items: center; color: #D1D5DB; padding: 14px 25px; text-decoration: none; font-size: 15px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { background: var(--sidebar-hover); color: white; border-left: 3px solid var(--accent); }
         .sidebar .logout { margin-top: auto; margin-bottom: 20px; border-top: 1px solid #374151; padding-top: 20px; color: #F87171; }
-        
-        /* Main Content */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         .header-panel { background: white; padding: 25px 35px; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 30px; }
-        .header-panel h1 { margin: 0; font-size: 24px; font-weight: 600; }
-        .header-panel p { margin: 6px 0 0 0; color: var(--text-muted); font-size: 14px; }
-        
-        /* Grid Layout per Form e Tabella */
         .content-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
-        
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 25px; }
         .card h3 { margin-top: 0; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; color: var(--text-main); font-size: 16px; }
-        
-        /* Form Elements */
         label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; margin-top: 15px; }
-        input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; box-sizing: border-box; font-family: 'Inter', sans-serif; font-size: 14px; }
-        input[type="text"]:focus, select:focus { outline: none; border-color: var(--accent); ring: 2px solid var(--accent); }
-        button { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; transition: 0.2s; }
-        button:hover { background: var(--accent-hover); }
-        
-        /* Alerts */
+        input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; }
         .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
         .alert.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-        .alert.error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
-
-        /* Table */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-        th { background-color: #F9FAFB; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 12px; }
-        tr:hover { background-color: #F9FAFB; }
-        .badge { background: #E0E7FF; color: #4338CA; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 5px; display: inline-block; margin-bottom: 4px;}
+        th { background-color: #F9FAFB; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; }
+        .badge { background: #E0E7FF; color: #4338CA; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 5px; display: inline-block; }
+        .badge-red { background: #FEE2E2; color: #991B1B; }
     </style>
 </head>
 <body>
@@ -156,7 +129,7 @@ $catalogo = $conn->query($catalogo_sql);
             <nav>
                 <a href="admin-dashboard.php">📊 Dashboard</a>
                 <a href="admin-categorie.php">📁 Gestione Categorie</a>
-                <a href="admin-ingredienti.php" class="active">🌿 Ingredienti e Benefici</a>
+                <a href="admin-ingredienti.php" class="active">🌿 Catalogo Ingredienti</a>
                 <a href="admin-proprieta.php">✨ Proprietà</a>
                 <a href="admin-utenti.php">👥 Moderazione Utenti</a>
             </nav>
@@ -165,8 +138,8 @@ $catalogo = $conn->query($catalogo_sql);
 
         <div class="main-content">
             <div class="header-panel">
-                <h1>Gestione Ingredienti e Benefici</h1>
-                <p>Inserisci nuove voci a catalogo e crea le associazioni tra gli ingredienti e i loro effetti benefici.</p>
+                <h1>Gestione Catalogo Dinamico</h1>
+                <p>Configura gli allergeni e gli ingredienti che i venditori potranno selezionare.</p>
             </div>
 
             <?php echo $messaggio; ?>
@@ -174,91 +147,87 @@ $catalogo = $conn->query($catalogo_sql);
             <div class="content-grid">
                 
                 <div>
+                    <div class="card" style="border-top: 4px solid #F87171;">
+                        <h3>⚠️ Aggiungi Allergene</h3>
+                        <form method="POST">
+                            <input type="hidden" name="azione" value="nuovo_allergene">
+                            <label>Nome Allergene</label>
+                            <input type="text" name="nome_allergene" required placeholder="Es. Arachidi">
+                            <label>Tipo/Categoria</label>
+                            <input type="text" name="tipo_allergene" placeholder="Es. Frutta a guscio">
+                            <button type="submit" style="background: #EF4444;">Salva Allergene</button>
+                        </form>
+                    </div>
+
                     <div class="card">
-                        <h3>1. Aggiungi Ingrediente</h3>
+                        <h3>🌿 Aggiungi Ingrediente</h3>
                         <form method="POST">
                             <input type="hidden" name="azione" value="nuovo_ingrediente">
-                            <label>Nome Ingrediente</label>
-                            <input type="text" name="nome_ingrediente" required placeholder="Es. Olio d'Oliva">
+                            <input type="text" name="nome_ingrediente" required placeholder="Es. Burro di Karité">
                             <button type="submit">Salva Ingrediente</button>
                         </form>
                     </div>
 
                     <div class="card">
-                        <h3>2. Aggiungi Beneficio</h3>
-                        <form method="POST">
-                            <input type="hidden" name="azione" value="nuovo_beneficio">
-                            <label>Nome Beneficio</label>
-                            <input type="text" name="nome_beneficio" required placeholder="Es. Idratante">
-                            <button type="submit" style="background: #3B82F6;">Salva Beneficio</button>
-                        </form>
-                    </div>
-
-                    <div class="card">
-                        <h3>3. Associa Ingrediente a Beneficio</h3>
+                        <h3>✨ Associa Beneficio</h3>
                         <form method="POST">
                             <input type="hidden" name="azione" value="associa">
-                            <label>Seleziona Ingrediente</label>
+                            <label>Ingrediente</label>
                             <select name="id_ingrediente" required>
-                                <option value="">-- Scegli --</option>
-                                <?php 
-                                $ingredienti->data_seek(0);
-                                while($ing = $ingredienti->fetch_assoc()): 
-                                ?>
+                                <?php $ingredienti->data_seek(0); while($ing = $ingredienti->fetch_assoc()): ?>
                                     <option value="<?php echo $ing['idIngrediente']; ?>"><?php echo htmlspecialchars($ing['nomeIngrediente']); ?></option>
                                 <?php endwhile; ?>
                             </select>
-
-                            <label>Seleziona Beneficio associato</label>
+                            <label>Effetto Benefico</label>
                             <select name="id_beneficio" required>
-                                <option value="">-- Scegli --</option>
-                                <?php 
-                                $benefici->data_seek(0);
-                                while($ben = $benefici->fetch_assoc()): 
-                                ?>
+                                <?php $benefici->data_seek(0); while($ben = $benefici->fetch_assoc()): ?>
                                     <option value="<?php echo $ben['idBeneficio']; ?>"><?php echo htmlspecialchars($ben['nomeBeneficio']); ?></option>
                                 <?php endwhile; ?>
                             </select>
-                            
-                            <button type="submit" style="background: #8B5CF6;">Crea Associazione</button>
+                            <button type="submit" style="background: #8B5CF6;">Collega</button>
                         </form>
                     </div>
                 </div>
 
                 <div>
-                    <div class="card" style="height: 100%;">
-                        <h3>Catalogo Ingredienti</h3>
+                    <div class="card">
+                        <h3>Allergeni Censiti</h3>
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Ingrediente</th>
-                                    <th>Benefici Associati</th>
-                                </tr>
+                                <tr><th>Nome</th><th>Tipo</th></tr>
                             </thead>
                             <tbody>
-                                <?php if ($catalogo && $catalogo->num_rows > 0): ?>
-                                    <?php while($row = $catalogo->fetch_assoc()): ?>
-                                        <tr>
-                                            <td style="font-weight: 500;"><?php echo htmlspecialchars($row['nomeIngrediente']); ?></td>
-                                            <td>
-                                                <?php 
-                                                if ($row['benefici_associati']) {
-                                                    $bens = explode(', ', $row['benefici_associati']);
-                                                    foreach($bens as $b) {
-                                                        echo "<span class='badge'>" . htmlspecialchars($b) . "</span>";
-                                                    }
-                                                } else {
-                                                    echo "<span style='color: #9CA3AF; font-size: 12px; font-style: italic;'>Nessun beneficio</span>";
-                                                }
-                                                ?>
-                                            </td>
-                                        </tr>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
+                                <?php while($all = $lista_allergeni->fetch_assoc()): ?>
                                     <tr>
-                                        <td colspan="2" style="text-align: center; padding: 30px; color: #9CA3AF;">Nessun ingrediente presente nel sistema.</td>
+                                        <td><span class="badge badge-red"><?php echo htmlspecialchars($all['nomeAllergene']); ?></span></td>
+                                        <td style="color: #6B7280; font-size: 12px;"><?php echo htmlspecialchars($all['tipo']); ?></td>
                                     </tr>
-                                <?php endif; ?>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <h3>Catalogo Associazioni</h3>
+                        <table>
+                            <thead>
+                                <tr><th>Ingrediente</th><th>Benefici</th></tr>
+                            </thead>
+                            <tbody>
+                                <?php while($row = $catalogo->fetch_assoc()): ?>
+                                    <tr>
+                                        <td style="font-weight: 500;"><?php echo htmlspecialchars($row['nomeIngrediente']); ?></td>
+                                        <td>
+                                            <?php 
+                                            if ($row['benefici_associati']) {
+                                                foreach(explode(', ', $row['benefici_associati']) as $b) {
+                                                    echo "<span class='badge'>$b</span>";
+                                                }
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
                             </tbody>
                         </table>
                     </div>
@@ -267,6 +236,5 @@ $catalogo = $conn->query($catalogo_sql);
             </div>
         </div>
     </div>
-
 </body>
 </html>
