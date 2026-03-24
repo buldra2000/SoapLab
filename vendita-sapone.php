@@ -79,49 +79,102 @@ if (!$user) {
     </header>
 
     <div class="form-container">
-        <h2>Pubblica la tua inserzione</h2>
-        <form action="db/vendita-process.php" method="POST" enctype="multipart/form-data">
-            
-            <label>Titolo Inserzione</label>
-            <input type="text" name="titolo" required placeholder="Es: Set Saponi Lavanda">
+    <h2>Pubblica la tua inserzione</h2>
+    <form action="db/vendita-process.php" method="POST" enctype="multipart/form-data">
+        
+        <label>Titolo Inserzione</label>
+        <input type="text" name="titolo" required placeholder="Es: Set 3 Saponi Lavanda e Agrumi">
 
-            <div style="display: flex; gap: 20px;">
-                <div style="flex: 1;">
-                    <label>Prezzo Totale (€)</label>
-                    <input type="number" step="0.01" name="prezzo" required>
-                </div>
-                <div style="flex: 1;">
-                    <label>Peso Complessivo (g)</label>
-                    <input type="number" name="peso" required>
-                </div>
+        <label>Descrizione del Set</label>
+        <textarea name="descrizione" rows="4" placeholder="Descrivi i saponi inclusi nel pacchetto..." required></textarea>
+
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <label>Prezzo Totale Set (€)</label>
+                <input type="number" step="0.01" name="prezzo" required>
             </div>
+            <div style="flex: 1;">
+                <label>Peso Complessivo (g)</label>
+                <input type="number" name="peso" required>
+            </div>
+        </div>
 
-            <hr>
-            <h3>Dettagli Sapone</h3>
+        <hr>
+        
+        <h3>Dettagli dei Saponi Inclusi</h3>
+        <p style="font-size: 13px; color: #666; margin-top: -5px;">Compila una scheda per ogni sapone presente in questa inserzione.</p>
 
-            <label>Nome Commerciale Sapone</label>
-            <input type="text" name="nome_sapone" required placeholder="Es: Lavanda Bio Relax">
+        <div id="saponi-container">
+            <div class="sapone-block" style="background: #fdfdfd; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="margin-top: 0; color: #28a745;">Sapone 1</h4>
+                
+                <label>Nome Commerciale Sapone</label>
+                <input type="text" name="nome_sapone[]" required placeholder="Es: Lavanda Bio Relax">
 
-            <label>Categoria</label>
-            <select name="categoria">
-                <option value="1">Viso</option>
-                <option value="2">Corpo</option>
-                <option value="3">Shampoo</option>
-                <option value="4">Mani</option>
-            </select>
+                <label>Categoria</label>
+                <select name="categoria[]">
+                    <option value="1">Viso</option>
+                    <option value="2">Corpo</option>
+                    <option value="3">Shampoo</option>
+                    <option value="4">Mani</option>
+                </select>
 
-            <label>Tipo di Pelle Consigliata</label>
-            <input type="text" name="pelle" placeholder="Es: Pelli grasse o sensibili">
+                <label>Tipo di Pelle Consigliata</label>
+                <input type="text" name="pelle[]" placeholder="Es: Pelli grasse o sensibili">
 
-            <label>Codice BIO (Certificazione)</label>
-            <input type="text" name="codice_bio">
+                <label>Codice BIO (Certificazione)</label>
+                <input type="text" name="codice_bio[]">
 
-            <label>Immagine Prodotto</label>
-            <input type="file" name="foto_sapone" required accept="image/*">
+                <label>Immagine Prodotto</label>
+                <input type="file" name="foto_sapone[]" required accept="image/*">
+            </div>
+        </div>
 
-            <button type="submit" class="btn-submit">Pubblica Ora</button>
-        </form>
-        <p style="text-align: center; margin-top: 20px;"><a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px;">← Torna alla Dashboard</a></p>
-    </div>
+        <button type="button" id="btn-aggiungi-sapone" style="background: #007bff; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 5px; font-size: 15px; margin-bottom: 20px; transition: 0.3s;">
+            + Aggiungi un altro sapone al set
+        </button>
+
+        <button type="submit" class="btn-submit">Pubblica Inserzione</button>
+    </form>
+    <p style="text-align: center; margin-top: 20px;"><a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px;">← Torna alla Dashboard</a></p>
+</div>
+<script>
+document.getElementById('btn-aggiungi-sapone').addEventListener('click', function() {
+    const container = document.getElementById('saponi-container');
+    const blocks = container.getElementsByClassName('sapone-block');
+    const newCount = blocks.length + 1;
+    
+    // Clona il primo blocco
+    const newBlock = blocks[0].cloneNode(true);
+    
+    // Aggiorna il titolo del nuovo blocco
+    newBlock.querySelector('h4').innerText = 'Sapone ' + newCount;
+    
+    // Svuota i valori degli input nel nuovo blocco clonati dal primo
+    const inputs = newBlock.querySelectorAll('input');
+    inputs.forEach(input => {
+        if(input.type !== 'file') input.value = '';
+    });
+    
+    // Crea un pulsante per rimuovere il blocco (utile se l'utente sbaglia)
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.innerText = 'Rimuovi questo sapone';
+    removeBtn.style = 'background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 13px;';
+    
+    // Funzione per rimuovere il blocco e rinumerare i restanti
+    removeBtn.onclick = function() { 
+        newBlock.remove(); 
+        // Rinumera i saponi rimasti
+        const currentBlocks = container.getElementsByClassName('sapone-block');
+        Array.from(currentBlocks).forEach((block, index) => {
+            block.querySelector('h4').innerText = 'Sapone ' + (index + 1);
+        });
+    };
+    
+    newBlock.appendChild(removeBtn);
+    container.appendChild(newBlock);
+});
+</script>
 </body>
 </html>
