@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once 'db/db.php';
+require_once '../db/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
@@ -200,7 +200,7 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
                 <a href="admin-proprieta.php">✨ Proprietà</a>
                 <a href="admin-utenti.php">👥 Moderazione Utenti</a>
             </nav>
-            <a href="db/logout-process.php" class="logout">🚪 Disconnetti</a>
+            <a href="../db/logout-process.php" class="logout">🚪 Disconnetti</a>
         </div>
 
         <div class="main-content">

@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($admin = $res_a->fetch_assoc()) {
         if (password_verify($password, $admin['password'])) {
             $_SESSION['admin_id'] = $admin['idAdmin'];
-            header("Location: ../admin-dashboard.php");
+            header("Location: ../admin/admin-dashboard.php");
             exit();
         } else {
             header("Location: ../login.html?error=wrongpassword");

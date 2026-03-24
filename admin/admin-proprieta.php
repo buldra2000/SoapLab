@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once 'db/db.php';
+require_once '../db/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
@@ -75,7 +75,7 @@ $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
             <a href="admin-proprieta.php" class="active">✨ Proprietà</a>
             <a href="admin-utenti.php">👥 Moderazione Utenti</a>
         </nav>
-        <a href="db/logout-process.php" class="logout">🚪 Disconnetti</a>
+        <a href="../db/logout-process.php" class="logout">🚪 Disconnetti</a>
     </div>
 
     <div class="main-content">

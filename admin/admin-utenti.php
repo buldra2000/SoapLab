@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once 'db/db.php';
+require_once '../db/db.php';
 
 // Controllo sicurezza ADMIN
 if (!isset($_SESSION['admin_id'])) {
@@ -105,7 +105,7 @@ $lista_utenti = $conn->query($sql_utenti);
             <a href="admin-proprieta.php">✨ Proprietà</a>
             <a href="admin-utenti.php" class="active">👥 Moderazione Utenti</a>
         </nav>
-        <a href="db/logout-process.php" class="logout">🚪 Disconnetti</a>
+        <a href="../db/logout-process.php" class="logout">🚪 Disconnetti</a>
     </div>
 
     <div class="main-content">
