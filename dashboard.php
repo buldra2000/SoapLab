@@ -76,10 +76,13 @@ if ($stmt_rat) {
 
 // --- 4. Recupero Storico Ordini ---
 $ordini = [];
-$sql_ordini = "SELECT a.idAcquisto, a.dataAcquisto, i.titolo, i.prezzoTotale, s.stato, s.tracking AS numeroTracking
+$sql_ordini = "SELECT a.idAcquisto, a.dataAcquisto, i.titolo, i.prezzoTotale, 
+                      i.idUtente AS idVenditore, s.stato, s.tracking AS numeroTracking,
+                      r.idRecensione
                FROM acquisti a
                JOIN inserzioni i ON a.idInserzione = i.idInserzione
                LEFT JOIN spedizioni s ON a.idAcquisto = s.idAcquisto
+               LEFT JOIN recensioni r ON a.idAcquisto = r.idAcquisto
                WHERE a.idUtente = ?
                ORDER BY a.dataAcquisto DESC";
 
@@ -254,22 +257,40 @@ if ($stmt_ord) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($ordini as $ordine): ?>
-                    <tr>
-                        <td><?php echo date('d/m/Y', strtotime($ordine['dataAcquisto'])); ?></td>
-                        <td><strong><?php echo htmlspecialchars($ordine['titolo']); ?></strong></td>
-                        <td>€<?php echo number_format($ordine['prezzoTotale'], 2); ?></td>
-                        <td>
-                            <span class="status-pill <?php echo ($ordine['stato'] == 'In lavorazione') ? 'status-lavorazione' : 'status-spedito'; ?>">
-                                <?php echo strtoupper($ordine['stato'] ?? 'PENDENTE'); ?>
-                            </span>
-                            <?php if (!empty($ordine['numeroTracking'])): ?>
-                                <br><small style="color: #888;">Tracking: <?php echo $ordine['numeroTracking']; ?></small>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
+    <?php foreach ($ordini as $ordine): ?>
+        <tr>
+            <td><?php echo date('d/m/Y', strtotime($ordine['dataAcquisto'])); ?></td>
+            <td><strong><?php echo htmlspecialchars($ordine['titolo']); ?></strong></td>
+            <td>€<?php echo number_format($ordine['prezzoTotale'], 2); ?></td>
+            <td>
+                <?php $stato_pulito = strtolower(trim($ordine['stato'])); ?>
+                <span class="status-pill <?php 
+                    if ($stato_pulito == 'in lavorazione') echo 'status-lavorazione';
+                    elseif ($stato_pulito == 'spedito') echo 'status-spedito';
+                    else echo 'status-attivo'; 
+                ?>">
+                    <?php echo strtoupper($ordine['stato'] ?? 'PENDENTE'); ?>
+                </span>
+
+                <?php if ($stato_pulito === 'consegnato' && empty($ordine['idRecensione'])): ?>
+                    <br>
+                    <a href="lascia-recensione.php?idAcq=<?php echo $ordine['idAcquisto']; ?>&idVend=<?php echo $ordine['idVenditore']; ?>" 
+                       style="display: inline-block; margin-top: 5px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 12px;">
+                       ⭐ Recensisci
+                    </a>
+                <?php elseif (!empty($ordine['idRecensione'])): ?>
+                    <br><small style="color: #888;">Recensione inviata ✅</small>
+                <?php elseif ($stato_pulito !== 'consegnato'): ?>
+                    <br><small style="color: #999;">Disponibile dopo consegna</small>
+                <?php endif; ?>
+
+                <?php if (!empty($ordine['numeroTracking'])): ?>
+                    <br><small style="color: #888;">Tracking: <?php echo htmlspecialchars($ordine['numeroTracking']); ?></small>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
         </table>
     <?php else: ?>
         <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
