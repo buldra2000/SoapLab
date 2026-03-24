@@ -26,12 +26,17 @@ if (!$inserzione) {
 
 // 2. Recupero TUTTI i SAPONI collegati a questa inserzione
 // Includiamo Categoria e Certificazione Bio per ogni singolo sapone
-$sql_saponi = "SELECT s.*, c.nomeCategoria, cb.codiceStandard, img.percorso 
+$sql_saponi = "SELECT s.*, c.nomeCategoria, cb.codiceStandard, img.percorso,
+               GROUP_CONCAT(a.nomeAllergene SEPARATOR ', ') AS lista_allergeni
                FROM saponi s 
                JOIN categorie c ON s.idCategoria = c.idCategoria 
                LEFT JOIN certificazioni_bio cb ON s.idCertificazione = cb.idCertificazione 
                LEFT JOIN immagini img ON s.idSapone = img.idSapone 
-               WHERE s.idInserzione = ?";
+               -- Join per gli allergeni
+               LEFT JOIN sapone_presenta_allergene spa ON s.idSapone = spa.idSapone
+               LEFT JOIN allergeni a ON spa.idAllergene = a.idAllergene
+               WHERE s.idInserzione = ?
+               GROUP BY s.idSapone"; // Fondamentale per non duplicare le righe
 $stmt_sap = $conn->prepare($sql_saponi);
 $stmt_sap->bind_param("i", $idInserzione);
 $stmt_sap->execute();
@@ -72,6 +77,7 @@ $saponi = $stmt_sap->get_result();
         
         .btn-buy { background: #28a745; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: 0.3s; display: inline-block; }
         .btn-buy:hover { background: #218838; transform: scale(1.02); }
+        .badge-allergene { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -85,8 +91,13 @@ $saponi = $stmt_sap->get_result();
     <div class="ins-header">
         <div class="ins-info">
             <h1><?php echo htmlspecialchars($inserzione['titolo']); ?></h1>
-            <p>Venduto da: <strong><?php echo htmlspecialchars($inserzione['v_nome'] . " " . $inserzione['v_cognome']); ?></strong> 
-               | Peso Totale: <?php echo $inserzione['pesoComplessivo']; ?>g</p>
+            <p>Venduto da: 
+    <strong>
+        <a href="profilo.php?id=<?php echo $inserzione['idUtente']; ?>" style="color: #2e7d32; text-decoration: none;">
+            <?php echo htmlspecialchars($inserzione['v_nome'] . " " . $inserzione['v_cognome']); ?>
+        </a>
+    </strong> 
+| Peso Totale: <?php echo $inserzione['pesoComplessivo']; ?>g</p>
         </div>
         <div class="ins-price-box">
             <span class="total-price">€<?php echo number_format($inserzione['prezzoTotale'], 2); ?></span>
@@ -120,6 +131,19 @@ $saponi = $stmt_sap->get_result();
                         <span class="label">ID Prodotto</span>
                         #<?php echo $sapone['idSapone']; ?>
                     </div>
+                    <div>
+    <span class="label">Allergeni</span>
+    <?php 
+    if (!empty($sapone['lista_allergeni'])) {
+        $array_all = explode(', ', $sapone['lista_allergeni']);
+        foreach($array_all as $all) {
+            echo '<span class="badge badge-allergene">' . htmlspecialchars($all) . '</span>';
+        }
+    } else {
+        echo '<span style="color: #28a745; font-size: 13px;">✔ Nessun allergene</span>';
+    }
+    ?>
+</div>
                 </div>
             </div>
         </div>
