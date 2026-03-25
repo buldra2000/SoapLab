@@ -2,20 +2,32 @@
 session_start(); 
 require_once 'db/db.php';
 
-// 1. QUERY DINAMICA: Recuperiamo le inserzioni reali dal DB
-// Usiamo LEFT JOIN sulle immagini per vedere l'inserzione anche se la foto mancasse
+// --- 1. RECUPERO CATEGORIE PER I FILTRI ---
+$sql_cat = "SELECT * FROM categorie ORDER BY nomeCategoria ASC";
+$res_cat = $conn->query($sql_cat);
+
+// --- 2. LOGICA DEL FILTRO (Requisito S4) ---
+$where_clause = "";
+if (isset($_GET['categoria']) && is_numeric($_GET['categoria'])) {
+    $idFiltro = (int)$_GET['categoria'];
+    // Se c'è un filtro, aggiungiamo la condizione alla query [cite: 58-59]
+    $where_clause = "WHERE c.idCategoria = $idFiltro";
+}
+
+// --- 3. QUERY DINAMICA INSERZIONI ---
 $sql = "SELECT i.idInserzione, i.titolo, i.prezzoTotale, i.pesoComplessivo, 
-               c.nomeCategoria, img.percorso 
+               c.nomeCategoria, c.idCategoria, img.percorso 
         FROM inserzioni i
         JOIN saponi s ON i.idInserzione = s.idInserzione
         JOIN categorie c ON s.idCategoria = c.idCategoria
         LEFT JOIN immagini img ON s.idSapone = img.idSapone
+        $where_clause
         GROUP BY i.idInserzione 
         ORDER BY i.idInserzione DESC";
 
 $result = $conn->query($sql);
 
-// 2. RECUPERO DATI UTENTE (Se loggato, per l'header)
+// --- 4. RECUPERO DATI UTENTE ---
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $id = $_SESSION['user_id'];
@@ -33,7 +45,6 @@ if (isset($_SESSION['user_id'])) {
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; }
         
-        /* Header CSS coerente con Dashboard */
         header { background: #fff; padding: 10px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
         header h1 { margin: 0; font-size: 24px; color: #333; }
         .dropdown { position: relative; display: inline-block; }
@@ -45,13 +56,15 @@ if (isset($_SESSION['user_id'])) {
         .dropdown:hover .dropdown-content { display: block; }
 
         .shop-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        
+        .filter-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { background: white; border: 1px solid #ddd; padding: 8px 20px; border-radius: 20px; color: #555; text-decoration: none; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .filter-btn:hover { background: #f0f0f0; }
+        .filter-btn.active { background: #28a745; color: white; border-color: #28a745; }
+
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
-        .product-card {
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.2s;
-            border: 1px solid #eee; text-align: center;
-        }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.2s; border: 1px solid #eee; text-align: center; }
         .product-card:hover { transform: translateY(-5px); }
         .product-img { width: 100%; height: 200px; object-fit: cover; background: #eee; }
         .product-info { padding: 20px; }
@@ -60,14 +73,10 @@ if (isset($_SESSION['user_id'])) {
         .product-meta { font-size: 13px; color: #777; margin-bottom: 15px; }
         .product-price { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 15px; }
         
-        .btn-buy {
-            background: #28a745; color: white; padding: 12px;
-            text-decoration: none; border-radius: 6px; display: block;
-            font-weight: bold; transition: 0.2s;
-        }
+        .btn-buy { background: #28a745; color: white; padding: 12px; text-decoration: none; border-radius: 6px; display: block; font-weight: bold; transition: 0.2s; }
         .btn-buy:hover { background: #218838; }
         
-        .empty-msg { grid-column: 1/-1; padding: 50px; color: #888; font-style: italic; }
+        .empty-msg { grid-column: 1/-1; padding: 50px; text-align: center; color: #888; font-style: italic; background: white; border-radius: 12px; }
     </style>
 </head>
 <body>
@@ -98,6 +107,20 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <div class="shop-container">
+        
+        <div class="filter-bar">
+            <a href="index.php" class="filter-btn <?php echo !isset($_GET['categoria']) ? 'active' : ''; ?>">
+                Tutte le categorie
+            </a>
+            
+            <?php while($cat = $res_cat->fetch_assoc()): ?>
+                <a href="index.php?categoria=<?php echo $cat['idCategoria']; ?>" 
+                   class="filter-btn <?php echo (isset($_GET['categoria']) && $_GET['categoria'] == $cat['idCategoria']) ? 'active' : ''; ?>">
+                    <?php echo htmlspecialchars($cat['nomeCategoria']); ?>
+                </a>
+            <?php endwhile; ?>
+        </div>
+
         <div class="product-grid">
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
@@ -117,7 +140,10 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                 <?php endwhile; ?>
             <?php else: ?>
-                <div class="empty-msg">Non ci sono ancora inserzioni disponibili. Sii il primo a vendere!</div>
+                <div class="empty-msg">
+                    <h3>Nessun sapone trovato</h3>
+                    <p>Non ci sono ancora inserzioni disponibili per questa categoria.</p>
+                </div>
             <?php endif; ?>
         </div>
     </div>
