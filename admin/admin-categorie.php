@@ -21,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
         $stmt = $conn->prepare("INSERT INTO categorie (nomeCategoria) VALUES (?)");
         $stmt->bind_param("s", $nome);
         if ($stmt->execute()) {
-            $messaggio = "<div class='alert success'>✅ Categoria creata con successo!</div>";
+            $messaggio = "<div class='alert success'>Categoria creata con successo!</div>";
         } else {
-            $messaggio = "<div class='alert error'>❌ Errore durante l'inserimento.</div>";
+            $messaggio = "<div class='alert error'>Errore durante l'inserimento.</div>";
         }
     }
 }
@@ -38,7 +38,6 @@ $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
     <title>Gestione Categorie - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Stesso CSS di admin-ingredienti.php per coerenza */
         :root { --sidebar-bg: #111827; --sidebar-hover: #1F2937; --accent: #10B981; --accent-hover: #059669; --bg-light: #F3F4F6; --text-main: #1F2937; --text-muted: #6B7280; --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-main); display: flex; min-height: 100vh; }
         .sidebar { width: 260px; background: var(--sidebar-bg); color: #E5E7EB; display: flex; flex-direction: column; }

@@ -38,152 +38,280 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <title>Vendi Sapone - SoapLab</title>
     <link rel="stylesheet" href="css/global.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; margin: 0; color: #333; }
-        header { background: #fff; padding: 15px 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .form-container { max-width: 700px; margin: 40px auto; background: white; padding: 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h2 { margin-bottom: 25px; color: #1f2937; border-bottom: 2px solid #28a745; display: inline-block; padding-bottom: 5px; }
-        
-        label { display: block; margin-top: 15px; font-weight: 600; color: #4b5563; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        
-        .sapone-block { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 20px; position: relative; }
-        
-        .allergeni-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; background: white; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; margin-top: 8px; }
-        .allergen-item { font-size: 13px; font-weight: 400; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .allergen-item input { width: auto; margin: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            color: #333;
+        }
 
-        .btn-add { background: #007bff; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 6px; margin-bottom: 20px; }
-        .btn-submit { background: #28a745; color: white; border: none; padding: 16px; cursor: pointer; font-weight: bold; width: 100%; border-radius: 6px; font-size: 16px; }
-        .btn-remove { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 15px; width: 100%; font-size: 13px; }
+        header {
+            background: #fff;
+            padding: 15px 40px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #1f2937;
+            border-bottom: 2px solid #28a745;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .sapone-block {
+            background: #f9fafb;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .allergeni-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            background: white;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .allergen-item {
+            font-size: 13px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .allergen-item input {
+            width: auto;
+            margin: 0;
+        }
+
+        .btn-add {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            font-size: 13px;
+        }
     </style>
 </head>
+
 <body>
 
-<header>
-    <h1 onclick="location.href='index.php'" style="cursor:pointer">SoapLab</h1>
-    <div style="font-weight: 500;">👤 <?php echo htmlspecialchars($user['nome']); ?></div>
-</header>
-
-<div class="form-container">
-    <h2>Nuova Inserzione</h2>
-    <form action="db/vendita-process.php" method="POST" enctype="multipart/form-data">
-        
-        <label>Titolo Inserzione</label>
-        <input type="text" name="titolo" required placeholder="Es: Kit Benessere Lavanda">
-
-        <label>Descrizione Generale</label>
-        <textarea name="descrizione" rows="3" required placeholder="Descrivi brevemente il contenuto del set..."></textarea>
-
-        <div style="display: flex; gap: 20px;">
-            <div style="flex: 1;">
-                <label>Prezzo Set (€)</label>
-                <input type="number" step="0.01" name="prezzo" required>
-            </div>
-            <div style="flex: 1;">
-                <label>Peso Totale (g)</label>
-                <input type="number" name="peso" required>
+    <header>
+        <h1><a href="index.php" style="text-decoration: none; color: inherit;">SoapLab</a></h1>
+        <div class="dropdown">
+            <div class="user-icon">👤</div>
+            <div class="dropdown-content">
+                <?php if (isset($user) && $user): ?>
+                    <a href="dashboard.php" style="text-align: center">
+                        <strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong>
+                    </a>
+                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
+                        Vendi un sapone
+                    </a>
+                    <a href="dashboard.php">La mia dashboard</a>
+                    <a href="indirizzi.php">I miei indirizzi</a>
+                    <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
+                    <a href="db/logout-process.php" style="color: #dc3545;">Logout</a>
+                <?php else: ?>
+                    <a href="login.html">Accedi</a>
+                    <a href="registrazione.html">Registrati</a>
+                <?php endif; ?>
             </div>
         </div>
+    </header>
 
-        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
-        
-        <h3>Dettagli Saponi</h3>
-        <div id="saponi-container">
-            <div class="sapone-block">
-                <h4 style="margin-top: 0; color: #059669;">Sapone 1</h4>
-                
-                <label>Nome Commerciale</label>
-                <input type="text" name="nome_sapone[]" required>
+    <div class="form-container">
+        <h2>Nuova Inserzione</h2>
+        <form action="db/vendita-process.php" method="POST" enctype="multipart/form-data">
 
-                <label>Categoria</label>
-<select name="categoria[]">
-    <?php foreach($categorie as $cat): ?>
-        <option value="<?php echo $cat['idCategoria']; ?>">
-            <?php echo htmlspecialchars($cat['nomeCategoria']); ?>
-        </option>
-    <?php endforeach; ?>
-</select>
+            <label>Titolo Inserzione</label>
+            <input type="text" name="titolo" required placeholder="Es: Kit Benessere Lavanda">
 
-                <label>Tipo di Pelle Consigliata</label>
-                <input type="text" name="pelle[]" placeholder="Es: Pelli secche">
+            <label>Descrizione Generale</label>
+            <textarea name="descrizione" rows="3" required
+                placeholder="Descrivi brevemente il contenuto del set..."></textarea>
 
-                <div style="display: flex; gap: 15px;">
-                    <div style="flex: 2;">
-                        <label>Codice BIO (Opzionale)</label>
-                        <input type="text" name="codice_bio[]">
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Validità</label>
-                        <input type="date" name="data_bio[]">
-                    </div>
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <label>Prezzo Set (€)</label>
+                    <input type="number" step="0.01" name="prezzo" required>
                 </div>
-
-                <label>Allergeni Presenti</label>
-                <div class="allergeni-grid">
-                    <?php foreach ($allergeni as $all): ?>
-    <label class="allergen-item">
-        <input type="checkbox" name="allergeni_0[]" value="<?php echo $all['idAllergene']; ?>">
-        <?php echo htmlspecialchars($all['nomeAllergene']); ?>
-    </label>
-<?php endforeach; ?>
+                <div style="flex: 1;">
+                    <label>Peso Totale (g)</label>
+                    <input type="number" name="peso" required>
                 </div>
-
-                <label>Foto Prodotto</label>
-                <input type="file" name="foto_sapone[]" required accept="image/*">
             </div>
-        </div>
 
-        <button type="button" id="btn-aggiungi-sapone" class="btn-add">+ Aggiungi altro sapone al set</button>
-        <button type="submit" class="btn-submit">Pubblica su SoapLab</button>
-    </form>
-</div>
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
 
-<script>
-document.getElementById('btn-aggiungi-sapone').addEventListener('click', function() {
-    const container = document.getElementById('saponi-container');
-    const blocks = container.getElementsByClassName('sapone-block');
-    const index = blocks.length; 
-    
-    // Clonazione del primo blocco
-    const newBlock = blocks[0].cloneNode(true);
-    newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
-    
-    // Reset di tutti i campi input
-    newBlock.querySelectorAll('input').forEach(input => {
-        if(input.type === 'checkbox') {
-            input.checked = false;
-            // IMPORTANTE: Aggiorna l'indice per le checkbox degli allergeni
-            input.name = `allergeni_${index}[]`;
-        } else if(input.type !== 'file') {
-            input.value = '';
-        }
-    });
+            <h3>Dettagli Saponi</h3>
+            <div id="saponi-container">
+                <div class="sapone-block">
+                    <h4 style="margin-top: 0; color: #059669;">Sapone 1</h4>
 
-    // Reset del select categoria
-    newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-    
-    // Aggiunta tasto rimozione
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.innerText = 'Rimuovi questo sapone';
-    removeBtn.className = 'btn-remove';
-    removeBtn.onclick = function() { 
-        newBlock.remove(); 
-        // Rinumera i titoli rimasti
-        Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
-            b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
+                    <label>Nome Commerciale</label>
+                    <input type="text" name="nome_sapone[]" required>
+
+                    <label>Categoria</label>
+                    <select name="categoria[]">
+                        <?php foreach ($categorie as $cat): ?>
+                            <option value="<?php echo $cat['idCategoria']; ?>">
+                                <?php echo htmlspecialchars($cat['nomeCategoria']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <label>Tipo di Pelle Consigliata</label>
+                    <input type="text" name="pelle[]" placeholder="Es: Pelli secche">
+
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 2;">
+                            <label>Codice BIO (Opzionale)</label>
+                            <input type="text" name="codice_bio[]">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Validità</label>
+                            <input type="date" name="data_bio[]">
+                        </div>
+                    </div>
+
+                    <label>Allergeni Presenti</label>
+                    <div class="allergeni-grid">
+                        <?php foreach ($allergeni as $all): ?>
+                            <label class="allergen-item">
+                                <input type="checkbox" name="allergeni_0[]" value="<?php echo $all['idAllergene']; ?>">
+                                <?php echo htmlspecialchars($all['nomeAllergene']); ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <label>Foto Prodotto</label>
+                    <input type="file" name="foto_sapone[]" required accept="image/*">
+                </div>
+            </div>
+
+            <button type="button" id="btn-aggiungi-sapone" class="btn-add">+ Aggiungi altro sapone al set</button>
+            <button type="submit" class="btn-submit">Pubblica su SoapLab</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('btn-aggiungi-sapone').addEventListener('click', function () {
+            const container = document.getElementById('saponi-container');
+            const blocks = container.getElementsByClassName('sapone-block');
+            const index = blocks.length;
+
+            // Clonazione del primo blocco
+            const newBlock = blocks[0].cloneNode(true);
+            newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
+
+            // Reset di tutti i campi input
+            newBlock.querySelectorAll('input').forEach(input => {
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                    // IMPORTANTE: Aggiorna l'indice per le checkbox degli allergeni
+                    input.name = `allergeni_${index}[]`;
+                } else if (input.type !== 'file') {
+                    input.value = '';
+                }
+            });
+
+            // Reset del select categoria
+            newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+            // Aggiunta tasto rimozione
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerText = 'Rimuovi questo sapone';
+            removeBtn.className = 'btn-remove';
+            removeBtn.onclick = function () {
+                newBlock.remove();
+                // Rinumera i titoli rimasti
+                Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
+                    b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
+                });
+            };
+
+            newBlock.appendChild(removeBtn);
+            container.appendChild(newBlock);
         });
-    };
-    
-    newBlock.appendChild(removeBtn);
-    container.appendChild(newBlock);
-});
-</script>
+    </script>
 
 </body>
+
 </html>

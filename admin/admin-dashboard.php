@@ -12,8 +12,6 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 $admin_id = $_SESSION['admin_id'];
-
-// Recupero dati admin
 $sql = "SELECT nome, cognome FROM amministratori WHERE idAdmin = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $admin_id);
@@ -21,7 +19,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $admin = $result->fetch_assoc();
 
-// --- QUERY PER LE STATISTICHE DELLA DASHBOARD ---
 // 1. Totale Ingredienti
 $res_ing = $conn->query("SELECT COUNT(*) as tot FROM ingredienti");
 $tot_ingredienti = $res_ing ? $res_ing->fetch_assoc()['tot'] : 0;
@@ -34,6 +31,7 @@ $tot_utenti = $res_utenti ? $res_utenti->fetch_assoc()['tot'] : 0;
 $res_cat = $conn->query("SELECT COUNT(*) as tot FROM categorie");
 $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -204,7 +202,6 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
         </div>
 
         <div class="main-content">
-            
             <div class="header-panel">
                 <div>
                     <h1>Bentornato, <?php echo htmlspecialchars($admin['nome']); ?></h1>
@@ -214,7 +211,6 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
                     📅 <?php echo date('d/m/Y'); ?>
                 </div>
             </div>
-
             <div class="dashboard-grid">
                 <div class="stat-card green">
                     <h3>Totale Ingredienti</h3>
@@ -229,14 +225,7 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
                     <p><?php echo $tot_categorie; ?></p>
                 </div>
             </div>
-            
-            <div class="welcome-banner">
-                <h2>Tutto sotto controllo.</h2>
-                <p>Usa il menu laterale per popolare il database con nuovi ingredienti e proprietà, oppure per moderare i venditori presenti sulla piattaforma SoapLab assicurandoti che rispettino gli standard di qualità.</p>
-            </div>
-
         </div>
     </div>
-
 </body>
 </html>

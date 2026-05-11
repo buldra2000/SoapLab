@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once 'db/db.php'; 
+require_once 'db/db.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
@@ -56,11 +56,7 @@ if ($stmt_ven) {
     $vendite = 0;
 }
 
-// --- 3. Calcolo Rating ---
-// N.B: Ipotizzo che la Foreign Key in 'recensioni' sia 'idVenditore'
-// --- 3. Calcolo Rating ---
-// Aggiornato con il nome colonna corretto: idDestinatario
-$sql_rating = "SELECT AVG(voto) AS media_voti FROM recensioni WHERE idDestinatario = ?"; 
+$sql_rating = "SELECT AVG(voto) AS media_voti FROM recensioni WHERE idDestinatario = ?";
 $stmt_rat = $conn->prepare($sql_rating);
 if ($stmt_rat) {
     $stmt_rat->bind_param("i", $user_id);
@@ -73,8 +69,6 @@ if ($stmt_rat) {
     $rating = "Nessuna";
 }
 
-
-// --- 4. Recupero Storico Ordini ---
 $ordini = [];
 $sql_ordini = "SELECT a.idAcquisto, a.dataAcquisto, i.titolo, i.prezzoTotale, 
                       i.idUtente AS idVenditore, s.stato, s.tracking AS numeroTracking,
@@ -94,7 +88,6 @@ if ($stmt_ord) {
     $stmt_ord->close();
 }
 
-// --- 5. Recupero Le Mie Pubblicazioni ---
 $pubblicazioni = [];
 $sql_pub = "SELECT idInserzione, titolo, prezzoTotale, pesoComplessivo 
             FROM inserzioni 
@@ -109,72 +102,136 @@ if ($stmt_pub) {
     $stmt_pub->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/global.css">
     <title>Dashboard - SoapLab</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
 
-        header {
-            background-color: #ffffff;
-            padding: 10px 40px;
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+
+        .account-info {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 12px 0;
+            border-bottom: 1px solid #f9f9f9;
         }
 
-        h1 { margin: 0; font-size: 24px; color: #333; flex-grow: 1; }
-
-        .dropdown { position: relative; display: inline-block; }
-
-        .user-icon {
-            font-size: 20px; cursor: pointer; padding: 8px; background: #f0f0f0;
-            border-radius: 50%; width: 35px; height: 35px; display: flex;
-            align-items: center; justify-content: center; transition: 0.3s;
-        }
-        .user-icon:hover { background: #e0e0e0; }
-
-        .dropdown-content {
-            display: none; position: absolute; right: 0; background-color: #fff;
-            min-width: 200px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
-            z-index: 100; border-radius: 8px; overflow: hidden; border: 1px solid #eee;
+        .label {
+            font-weight: bold;
+            color: #777;
         }
 
-        .dropdown-content a {
-            color: #444; padding: 12px 16px; text-decoration: none;
-            display: block; font-size: 14px; transition: 0.2s;
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
         }
 
-        .dropdown-content a:hover { background-color: #f8f9fa; color: #28a745; }
+        .btn-logout {
+            background: #6c757d;
+            color: white;
+            margin-top: 20px;
+        }
 
-        .dropdown:hover .dropdown-content { display: block; }
+        .btn-delete {
+            background: #fee;
+            color: #dc3545;
+            border: none;
+            margin-left: 10px;
+        }
 
-        .container { padding: 40px; max-width: 1000px; margin: auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
-        .card .value { font-size: 32px; font-weight: bold; color: #28a745; margin: 10px 0; }
-        
-        .account-info { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f9f9f9; }
-        .label { font-weight: bold; color: #777; }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
 
-        .btn { padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; cursor: pointer; display: inline-block; }
-        .btn-logout { background: #6c757d; color: white; margin-top: 20px; }
-        .btn-delete { background: #fee; color: #dc3545; border: none; margin-left: 10px; }
+        .status-attivo {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
 
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-attivo { background: #e8f5e9; color: #2e7d32; }
-        .status-bloccato { background: #ffebee; color: #c62828; }
+        .status-bloccato {
+            background: #ffebee;
+            color: #c62828;
+        }
 
-        /* Stile per i messaggi di notifica */
-        .alert { padding: 15px; text-align: center; font-weight: bold; }
-        .alert-success { background-color: #d4edda; color: #155724; border-bottom: 1px solid #c3e6cb; }
+        .alert {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-bottom: 1px solid #c3e6cb;
+        }
+
+        .multi-img-preview {
+            display: flex;
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            background: #eee;
+        }
+
+        .multi-img-preview img {
+            flex: 1;
+            height: 100%;
+            object-fit: cover;
+            border-right: 2px solid #fff;
+        }
+
+        .multi-img-preview img:last-child {
+            border-right: none;
+        }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -185,7 +242,7 @@ if ($stmt_pub) {
                 <a href="index.php" style="text-align: center; background: #f8f9fa;">
                     <strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong>
                 </a>
-                
+
                 <?php if ($user['statoVendita'] !== 'bloccato'): ?>
                     <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
                         🧼 Vendi un sapone
@@ -202,9 +259,9 @@ if ($stmt_pub) {
 
     <?php if (isset($_GET['msg'])): ?>
         <?php if ($_GET['msg'] === 'sapone_aggiunto'): ?>
-            <div class="alert alert-success">✅ Inserzione pubblicata con successo!</div>
+            <div class="alert alert-success">Inserzione pubblicata con successo!</div>
         <?php elseif ($_GET['msg'] === 'welcome'): ?>
-            <div class="alert alert-success">🎉 Registrazione completata! Benvenuto in SoapLab.</div>
+            <div class="alert alert-success">Registrazione completata! Benvenuto in SoapLab.</div>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -222,7 +279,7 @@ if ($stmt_pub) {
                 <div class="value"><?php echo $acquisti; ?></div>
                 <p>Ordini effettuati</p>
             </div>
-            
+
             <div class="card">
                 <h3>Valutazione</h3>
                 <div class="value"><?php echo htmlspecialchars($rating); ?></div>
@@ -232,7 +289,8 @@ if ($stmt_pub) {
             <div class="card">
                 <h3>Stato Venditore</h3>
                 <div style="margin-top: 15px;">
-                    <span class="status-badge <?php echo ($user['statoVendita'] === 'bloccato') ? 'status-bloccato' : 'status-attivo'; ?>">
+                    <span
+                        class="status-badge <?php echo ($user['statoVendita'] === 'bloccato') ? 'status-bloccato' : 'status-attivo'; ?>">
                         <?php echo strtoupper($user['statoVendita'] ?? 'ATTIVO'); ?>
                     </span>
                 </div>
@@ -250,110 +308,154 @@ if ($stmt_pub) {
                 <span><?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?></span>
             </div>
             <style>
-                .orders-section { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 30px; }
-.orders-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-.orders-table th, .orders-table td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
-.orders-table th { color: #777; font-size: 13px; text-transform: uppercase; }
-.status-pill { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background: #eee; }
-.status-lavorazione { background: #fff3e0; color: #ef6c00; }
-.status-spedito { background: #e3f2fd; color: #1565c0; }
-                </style>
+                .orders-section {
+                    background: white;
+                    padding: 30px;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                    margin-top: 30px;
+                }
+
+                .orders-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 15px;
+                }
+
+                .orders-table th,
+                .orders-table td {
+                    text-align: left;
+                    padding: 12px;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .orders-table th {
+                    color: #777;
+                    font-size: 13px;
+                    text-transform: uppercase;
+                }
+
+                .status-pill {
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    background: #eee;
+                }
+
+                .status-lavorazione {
+                    background: #fff3e0;
+                    color: #ef6c00;
+                }
+
+                .status-spedito {
+                    background: #e3f2fd;
+                    color: #1565c0;
+                }
+            </style>
 
             <div class="orders-section">
-    <h3>I miei acquisti</h3>
-    <?php if (count($ordini) > 0): ?>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Prodotto</th>
-                    <th>Prezzo</th>
-                    <th>Stato Spedizione</th>
-                </tr>
-            </thead>
-            <tbody>
-    <?php foreach ($ordini as $ordine): ?>
-        <tr>
-            <td><?php echo date('d/m/Y', strtotime($ordine['dataAcquisto'])); ?></td>
-            <td><strong><?php echo htmlspecialchars($ordine['titolo']); ?></strong></td>
-            <td>€<?php echo number_format($ordine['prezzoTotale'], 2); ?></td>
-            <td>
-                <?php $stato_pulito = strtolower(trim($ordine['stato'])); ?>
-                <span class="status-pill <?php 
-                    if ($stato_pulito == 'in lavorazione') echo 'status-lavorazione';
-                    elseif ($stato_pulito == 'spedito') echo 'status-spedito';
-                    else echo 'status-attivo'; 
-                ?>">
-                    <?php echo strtoupper($ordine['stato'] ?? 'PENDENTE'); ?>
-                </span>
+                <h3>I miei acquisti</h3>
+                <?php if (count($ordini) > 0): ?>
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Prodotto</th>
+                                <th>Prezzo</th>
+                                <th>Stato Spedizione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($ordini as $ordine): ?>
+                                <tr>
+                                    <td><?php echo date('d/m/Y', strtotime($ordine['dataAcquisto'])); ?></td>
+                                    <td><strong><?php echo htmlspecialchars($ordine['titolo']); ?></strong></td>
+                                    <td>€<?php echo number_format($ordine['prezzoTotale'], 2); ?></td>
+                                    <td>
+                                        <?php $stato_pulito = strtolower(trim($ordine['stato'])); ?>
+                                        <span class="status-pill <?php
+                                        if ($stato_pulito == 'in lavorazione')
+                                            echo 'status-lavorazione';
+                                        elseif ($stato_pulito == 'spedito')
+                                            echo 'status-spedito';
+                                        else
+                                            echo 'status-attivo';
+                                        ?>">
+                                            <?php echo strtoupper($ordine['stato'] ?? 'PENDENTE'); ?>
+                                        </span>
 
-                <?php if ($stato_pulito === 'consegnato' && empty($ordine['idRecensione'])): ?>
-                    <br>
-                    <a href="lascia-recensione.php?idAcq=<?php echo $ordine['idAcquisto']; ?>&idVend=<?php echo $ordine['idVenditore']; ?>" 
-                       style="display: inline-block; margin-top: 5px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 12px;">
-                       ⭐ Recensisci
-                    </a>
-                <?php elseif (!empty($ordine['idRecensione'])): ?>
-                    <br><small style="color: #888;">Recensione inviata ✅</small>
-                <?php elseif ($stato_pulito !== 'consegnato'): ?>
-                    <br><small style="color: #999;">Disponibile dopo consegna</small>
+                                        <?php if ($stato_pulito === 'consegnato' && empty($ordine['idRecensione'])): ?>
+                                            <br>
+                                            <a href="lascia-recensione.php?idAcq=<?php echo $ordine['idAcquisto']; ?>&idVend=<?php echo $ordine['idVenditore']; ?>"
+                                                style="display: inline-block; margin-top: 5px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 12px;">
+                                                ⭐ Recensisci
+                                            </a>
+                                        <?php elseif (!empty($ordine['idRecensione'])): ?>
+                                            <br><small style="color: #888;">Recensione inviata</small>
+                                        <?php elseif ($stato_pulito !== 'consegnato'): ?>
+                                            <br><small style="color: #999;">Disponibile dopo consegna</small>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($ordine['numeroTracking'])): ?>
+                                            <br><small style="color: #888;">Tracking:
+                                                <?php echo htmlspecialchars($ordine['numeroTracking']); ?></small>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
                 <?php endif; ?>
+            </div>
 
-                <?php if (!empty($ordine['numeroTracking'])): ?>
-                    <br><small style="color: #888;">Tracking: <?php echo htmlspecialchars($ordine['numeroTracking']); ?></small>
+            <div class="orders-section" style="margin-top: 40px;">
+                <h3>Le mie pubblicazioni</h3>
+                <?php if (count($pubblicazioni) > 0): ?>
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Titolo Inserzione</th>
+                                <th>Prezzo Totale</th>
+                                <th>Peso</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pubblicazioni as $pub): ?>
+                                <tr>
+                                    <td><strong><?php echo htmlspecialchars($pub['titolo']); ?></strong></td>
+                                    <td>€<?php echo number_format($pub['prezzoTotale'], 2); ?></td>
+                                    <td><?php echo $pub['pesoComplessivo']; ?>g</td>
+                                    <td>
+                                        <a href="inserzione.php?id=<?php echo $pub['idInserzione']; ?>"
+                                            style="color: #28a745; text-decoration: none; font-size: 13px; font-weight: bold;">
+                                            🔍 Visualizza
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p style="color: #888; font-style: italic;">Non hai ancora pubblicato inserzioni.
+                        <a href="vendita-sapone.php" style="color: #28a745;">Inizia ora!</a>
+                    </p>
                 <?php endif; ?>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</tbody>
-        </table>
-    <?php else: ?>
-        <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
-    <?php endif; ?>
-</div>
+            </div>
 
-<div class="orders-section" style="margin-top: 40px;">
-    <h3>Le mie pubblicazioni</h3>
-    <?php if (count($pubblicazioni) > 0): ?>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Titolo Inserzione</th>
-                    <th>Prezzo Totale</th>
-                    <th>Peso</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($pubblicazioni as $pub): ?>
-                    <tr>
-                        <td><strong><?php echo htmlspecialchars($pub['titolo']); ?></strong></td>
-                        <td>€<?php echo number_format($pub['prezzoTotale'], 2); ?></td>
-                        <td><?php echo $pub['pesoComplessivo']; ?>g</td>
-                        <td>
-                            <a href="inserzione.php?id=<?php echo $pub['idInserzione']; ?>" 
-                               style="color: #28a745; text-decoration: none; font-size: 13px; font-weight: bold;">
-                               🔍 Visualizza
-                            </a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p style="color: #888; font-style: italic;">Non hai ancora pubblicato inserzioni. 
-        <a href="vendita-sapone.php" style="color: #28a745;">Inizia ora!</a></p>
-    <?php endif; ?>
-</div>
-            
             <div style="text-align: center; margin-top: 30px;">
                 <a href="db/logout-process.php" class="btn btn-logout">Disconnetti</a>
                 <form action="db/delete-account.php" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-delete" onclick="return confirm('Eliminare l\'account?');">Elimina Account</button>
+                    <button type="submit" class="btn btn-delete"
+                        onclick="return confirm('Eliminare l\'account?');">Elimina Account</button>
                 </form>
             </div>
         </div>
     </div>
 
 </body>
+
 </html>
