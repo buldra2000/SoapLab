@@ -2,6 +2,18 @@
 session_start();
 require_once 'db.php';
 
+/**
+ * Processo di acquisto
+ *  1) Verifica autenticazione e id
+ *  2) Controllo se l'utente ha almeno 1 indirizzo di spedizione
+ *  3) Gestione transazione SQL
+ *  4) Registrazione acquisto
+ *  5) Simulazione pagamento + tracciamento
+ *  6) Inizializzazione spedizione
+ *  7) Salvataggio o annullamento transazione
+ */
+
+// 1) Verifica autenticazioe e id
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.html");
     exit();
@@ -15,6 +27,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $idUtente = $_SESSION['user_id'];
 $idInserzione = (int)$_GET['id'];
 
+// 2) Controllo se l'utente ha almeno 1 indirizzo di spedizione
 $sql_addr = "SELECT idIndirizzo FROM indirizzi WHERE idUtente = ? LIMIT 1";
 $stmt_addr = $conn->prepare($sql_addr);
 $stmt_addr->bind_param("i", $idUtente);
@@ -26,15 +39,18 @@ if (!$res_addr) {
 }
 $idIndirizzo = $res_addr['idIndirizzo'];
 
+// 3) Gestione transazione SQL
 $conn->begin_transaction();
 
 try {
+    // 4) Registrazione acquisto in 'acquisti'
     $sql_acq = "INSERT INTO acquisti (idUtente, idInserzione, idIndirizzo, dataAcquisto) VALUES (?, ?, ?, NOW())";
     $stmt_acq = $conn->prepare($sql_acq);
     $stmt_acq->bind_param("iii", $idUtente, $idInserzione, $idIndirizzo);
     $stmt_acq->execute();
     $idAcquisto = $stmt_acq->insert_id;
 
+    // 5) Simulazione pagamento + tracciamento
     $esito = "Completato";
     $transazione_finta = "PAYID-" . strtoupper(bin2hex(random_bytes(8)));
     $sql_pag = "INSERT INTO pagamenti (idAcquisto, esitoPagamento, idTransazionePaypal) VALUES (?, ?, ?)";
@@ -48,6 +64,7 @@ try {
     $stmt_sped->bind_param("is", $idAcquisto, $stato_iniziale);
     $stmt_sped->execute();
 
+    //Modifiche al db permanenti
     $conn->commit();
     
     header("Location: ../dashboard.php?msg=acquisto_completato");

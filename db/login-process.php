@@ -2,10 +2,24 @@
 session_start();
 require_once 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+/**
+ * Processo login utente.
+ *  1) Verifica richiesta metodo POST
+ *  2) Recupero e pulizia form
+ *  3) Ricerca email in 'utenti'
+ *  4) Verifica password e stato
+ *  5) Ricerca email in 'amministratori'
+ *  6) Fallimento autenticazione
+ */
 
+// 1) Verifica richiesta metodo POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // 2) Recupero e pulizia form
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    // 3) Ricerca email in 'utenti'
     $sql_u = "SELECT idUtente, password, statoVendita FROM utenti WHERE email = ?";
     $stmt_u = $conn->prepare($sql_u);
     
@@ -17,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_u->execute();
     $res_u = $stmt_u->get_result();
 
+    // 4) Verifica password e stato
     if ($user = $res_u->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
             if ($user['statoVendita'] === 'bloccato') {
@@ -32,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // 5) Ricerca email in 'amministratori'
     $sql_a = "SELECT idAdmin, password FROM amministratori WHERE email = ?";
     $stmt_a = $conn->prepare($sql_a);
     $stmt_a->bind_param("s", $email);
@@ -49,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // 6) Fallimento autenticazione
     header("Location: ../login.html?error=usernotfound");
     exit();
 

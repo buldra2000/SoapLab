@@ -12,42 +12,36 @@
 
     <div class="register-card">
         <h1>SoapLab<span class="brand-dot">.</span></h1>
-        <p>Crea il tuo account SoapLab</p>
+        <p>Crea il tuo account</p>
 
         <div id="error-message" class="error-box"></div>
 
+        <!--Form di registrazione-->
         <form action="db/register-process.php" method="POST">
             <div class="form-row">
                 <div class="form-group">
                     <label for="name">Nome</label>
-                    <input type="text" id="name" name="name" placeholder="Mario" required>
+                    <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
                     <label for="surname">Cognome</label>
-                    <input type="text" id="surname" name="surname" placeholder="Rossi" required>
+                    <input type="text" id="surname" name="surname" required>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="mario.rossi@soaplab.it" required>
+                <input type="email" id="email" name="email" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                <input type="password" id="password" name="password" required>
             </div>
 
             <div class="form-group">
                 <label for="confirm-password">Conferma Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required>
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms" style="text-transform: none; font-weight: 400; margin: 0;">
-                    Accetto i <a href="privacy-policy.html" target="_blank">termini e le condizioni</a>
-                </label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
             </div>
 
             <button type="submit">Crea Account</button>
@@ -58,6 +52,7 @@
         </div>
     </div>
 
+    <!--Script gestione errori query URL-->
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get('error');

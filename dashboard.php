@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
+//Controllo sessione, se non loggato -> login.html
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -13,6 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+//Recupero dati utente
 $sql = "SELECT nome, cognome, email, statoVendita FROM utenti WHERE idUtente = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -25,7 +27,17 @@ if ($user = $result->fetch_assoc()) {
 }
 $stmt->close();
 
-$sql_acquisti = "SELECT COUNT(*) AS num_acquisti FROM acquisti WHERE idUtente = ?";
+/**
+ * Calcolo statistiche:
+ *  - Conteggio acquisti utente
+ *  - Conteggio vendite utente
+ *  - Calcolo media voti
+ */
+
+//Conteggio acquisti utente
+$sql_acquisti = "SELECT COUNT(*) AS num_acquisti 
+                 FROM acquisti 
+                 WHERE idUtente = ?";
 $stmt_acq = $conn->prepare($sql_acquisti);
 if ($stmt_acq) {
     $stmt_acq->bind_param("i", $user_id);
@@ -37,6 +49,7 @@ if ($stmt_acq) {
     $acquisti = 0;
 }
 
+//Conteggio vendite utente
 $sql_vendite = "SELECT COUNT(*) AS num_vendite 
                 FROM acquisti a 
                 JOIN inserzioni i ON a.idInserzione = i.idInserzione 
@@ -52,7 +65,10 @@ if ($stmt_ven) {
     $vendite = 0;
 }
 
-$sql_rating = "SELECT AVG(voto) AS media_voti FROM recensioni WHERE idDestinatario = ?";
+// Calcolo media voti
+$sql_rating = "SELECT AVG(voto) AS media_voti 
+               FROM recensioni 
+               WHERE idDestinatario = ?";
 $stmt_rat = $conn->prepare($sql_rating);
 if ($stmt_rat) {
     $stmt_rat->bind_param("i", $user_id);
@@ -65,6 +81,7 @@ if ($stmt_rat) {
     $rating = "Nessuna";
 }
 
+//Cronologia ordini JOIN e LEFT JOIN
 $ordini = [];
 $sql_ordini = "SELECT a.idAcquisto, a.dataAcquisto, i.titolo, i.prezzoTotale, 
                       i.idUtente AS idVenditore, s.stato, s.tracking AS numeroTracking,
@@ -84,6 +101,7 @@ if ($stmt_ord) {
     $stmt_ord->close();
 }
 
+//Recupero inserzioni utente
 $pubblicazioni = [];
 $sql_pub = "SELECT idInserzione, titolo, prezzoTotale, pesoComplessivo 
             FROM inserzioni 
@@ -123,7 +141,7 @@ if ($stmt_pub) {
 
                 <?php if ($user['statoVendita'] !== 'bloccato'): ?>
                     <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
-                        🧼 Vendi un sapone
+                        Vendi un sapone
                     </a>
                 <?php endif; ?>
 
@@ -142,7 +160,8 @@ if ($stmt_pub) {
             <div class="alert alert-success">Registrazione completata! Benvenuto in SoapLab.</div>
         <?php endif; ?>
     <?php endif; ?>
-
+    
+    <!-- Statistiche utente -> Vendite, acquisti, rating, stato -->
     <div class="container">
         <h2>Benvenuto, <?php echo htmlspecialchars($user['nome']); ?>!</h2>
 
@@ -186,6 +205,7 @@ if ($stmt_pub) {
                 <span><?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?></span>
             </div>
 
+            <!-- Recupero acquisti -->
             <div class="orders-section">
                 <h3>I miei acquisti</h3>
                 <?php if (count($ordini) > 0): ?>
@@ -242,7 +262,8 @@ if ($stmt_pub) {
                     <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
                 <?php endif; ?>
             </div>
-
+            
+            <!-- Recupero inserzioni -->
             <div class="orders-section" style="margin-top: 40px;">
                 <h3>Le mie pubblicazioni</h3>
                 <?php if (count($pubblicazioni) > 0): ?>
@@ -277,9 +298,10 @@ if ($stmt_pub) {
                     </p>
                 <?php endif; ?>
             </div>
-
+            
+            <!-- Logout - Elimina utente -->
             <div style="text-align: center; margin-top: 30px;">
-                <a href="db/logout-process.php" class="btn btn-logout">Disconnetti</a>
+                <a href="db/logout-process.php" class="btn btn-logout">Logout</a>
                 <form action="db/delete-account.php" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-delete"
                         onclick="return confirm('Eliminare l\'account?');">Elimina Account</button>

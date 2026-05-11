@@ -1,3 +1,4 @@
+<!--Collegamento MySQL-->
 <?php
 $host = "localhost";
 $user = "root";
