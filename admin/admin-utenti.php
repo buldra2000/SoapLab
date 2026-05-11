@@ -48,24 +48,11 @@ $lista_utenti = $conn->query($sql_utenti);
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/admin-global.css">
     <title>Moderazione Utenti - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --sidebar-bg: #111827; --sidebar-hover: #1F2937; --accent: #10B981; --bg-light: #F3F4F6; --text-main: #1F2937; --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-main); display: flex; min-height: 100vh; }
-        
-        .sidebar { width: 260px; background: var(--sidebar-bg); color: #E5E7EB; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 30px 25px 20px 25px; border-bottom: 1px solid #374151; margin-bottom: 15px; }
-        .sidebar-header h2 { margin: 0; color: white; font-size: 22px; font-weight: 700; }
-        .sidebar-header span { color: var(--accent); }
-        .sidebar a { display: flex; align-items: center; color: #D1D5DB; padding: 14px 25px; text-decoration: none; font-size: 15px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
-        .sidebar a:hover, .sidebar a.active { background: var(--sidebar-hover); color: white; border-left: 3px solid var(--accent); }
-        .sidebar .logout { margin-top: auto; margin-bottom: 20px; border-top: 1px solid #374151; padding-top: 20px; color: #F87171; }
-        
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .header-panel { background: white; padding: 25px 35px; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 30px; }
-        .header-panel h1 { margin: 0; font-size: 24px; }
-        
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow); }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #E5E7EB; }
@@ -94,13 +81,13 @@ $lista_utenti = $conn->query($sql_utenti);
             <div style="font-size: 12px; color: #9CA3AF; margin-top: 5px;">Admin Panel</div>
         </div>
         <nav>
-            <a href="admin-dashboard.php">📊 Dashboard</a>
-            <a href="admin-categorie.php">📁 Gestione Categorie</a>
-            <a href="admin-ingredienti.php">🌿 Ingredienti e Benefici</a>
-            <a href="admin-proprieta.php">✨ Proprietà</a>
-            <a href="admin-utenti.php" class="active">👥 Moderazione Utenti</a>
+            <a href="admin-dashboard.php">Dashboard</a>
+            <a href="admin-categorie.php">Gestione Categorie</a>
+            <a href="admin-ingredienti.php">Ingredienti e Benefici</a>
+            <a href="admin-proprieta.php">Proprietà</a>
+            <a href="admin-utenti.php">Moderazione Utenti</a>
         </nav>
-        <a href="../db/logout-process.php" class="logout">🚪 Disconnetti</a>
+        <a href="../db/logout-process.php" class="logout">Disconnetti</a>
     </div>
 
     <div class="main-content">

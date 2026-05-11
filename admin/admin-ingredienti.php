@@ -79,35 +79,10 @@ $catalogo = $conn->query($catalogo_sql);
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/admin-global.css">
     <title>Gestione Catalogo - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --sidebar-bg: #111827; --sidebar-hover: #1F2937; --accent: #10B981; --accent-hover: #059669; --bg-light: #F3F4F6; --text-main: #1F2937; --text-muted: #6B7280; --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-main); }
-        .admin-layout { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: var(--sidebar-bg); color: #E5E7EB; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 30px 25px 20px 25px; border-bottom: 1px solid #374151; margin-bottom: 15px; }
-        .sidebar-header h2 { margin: 0; color: white; font-size: 22px; font-weight: 700; }
-        .sidebar-header span { color: var(--accent); }
-        .sidebar a { display: flex; align-items: center; color: #D1D5DB; padding: 14px 25px; text-decoration: none; font-size: 15px; font-weight: 500; border-left: 3px solid transparent; transition: 0.2s; }
-        .sidebar a:hover, .sidebar a.active { background: var(--sidebar-hover); color: white; border-left: 3px solid var(--accent); }
-        .sidebar .logout { margin-top: auto; margin-bottom: 20px; border-top: 1px solid #374151; padding-top: 20px; color: #F87171; }
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .header-panel { background: white; padding: 25px 35px; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 30px; }
-        .content-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 25px; }
-        .card h3 { margin-top: 0; border-bottom: 1px solid #E5E7EB; padding-bottom: 10px; color: var(--text-main); font-size: 16px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; margin-top: 15px; }
-        input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        button { background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 15px; }
-        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
-        .alert.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-        th { background-color: #F9FAFB; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; }
-        .badge { background: #E0E7FF; color: #4338CA; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 5px; display: inline-block; }
-        .badge-red { background: #FEE2E2; color: #991B1B; }
-    </style>
 </head>
 <body>
 
@@ -118,13 +93,13 @@ $catalogo = $conn->query($catalogo_sql);
                 <div style="font-size: 12px; color: #9CA3AF; margin-top: 5px;">Admin Panel</div>
             </div>
             <nav>
-                <a href="admin-dashboard.php">📊 Dashboard</a>
-                <a href="admin-categorie.php">📁 Gestione Categorie</a>
-                <a href="admin-ingredienti.php" class="active">🌿 Catalogo Ingredienti</a>
-                <a href="admin-proprieta.php">✨ Proprietà</a>
-                <a href="admin-utenti.php">👥 Moderazione Utenti</a>
+                <a href="admin-dashboard.php">Dashboard</a>
+                <a href="admin-categorie.php">Gestione Categorie</a>
+                <a href="admin-ingredienti.php">Ingredienti e Benefici</a>
+                <a href="admin-proprieta.php">Proprietà</a>
+                <a href="admin-utenti.php">Moderazione Utenti</a>
             </nav>
-            <a href="../db/logout-process.php" class="logout">🚪 Disconnetti</a>
+            <a href="../db/logout-process.php" class="logout">Disconnetti</a>
         </div>
 
         <div class="main-content">
@@ -139,7 +114,7 @@ $catalogo = $conn->query($catalogo_sql);
                 
                 <div>
                     <div class="card" style="border-top: 4px solid #F87171;">
-                        <h3>⚠️ Aggiungi Allergene</h3>
+                        <h3>Aggiungi Allergene</h3>
                         <form method="POST">
                             <input type="hidden" name="azione" value="nuovo_allergene">
                             <label>Nome Allergene</label>
@@ -151,7 +126,7 @@ $catalogo = $conn->query($catalogo_sql);
                     </div>
 
                     <div class="card">
-                        <h3>🌿 Aggiungi Ingrediente</h3>
+                        <h3>Aggiungi Ingrediente</h3>
                         <form method="POST">
                             <input type="hidden" name="azione" value="nuovo_ingrediente">
                             <input type="text" name="nome_ingrediente" required placeholder="Es. Burro di Karité">
@@ -160,7 +135,7 @@ $catalogo = $conn->query($catalogo_sql);
                     </div>
 
                     <div class="card">
-                        <h3>✨ Associa Beneficio</h3>
+                        <h3>Associa Beneficio</h3>
                         <form method="POST">
                             <input type="hidden" name="azione" value="associa">
                             <label>Ingrediente</label>
