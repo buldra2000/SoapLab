@@ -1,4 +1,8 @@
 <?php
+// 1. ABILITA ERRORI (Rimuovi in produzione)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require_once 'db/db.php';
 
@@ -9,7 +13,15 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idInserzione = (int) $_GET['id'];
 
-// 1. Recupero i dati generali dell'INSERZIONE e del VENDITORE
+// 2. RECUPERO DATI UTENTE PER NAVBAR (Mancava!)
+$user = null;
+if (isset($_SESSION['user_id'])) {
+    $id = $_SESSION['user_id'];
+    $res_user = $conn->query("SELECT nome, cognome FROM utenti WHERE idUtente = $id");
+    if($res_user) $user = $res_user->fetch_assoc();
+}
+
+// 3. RECUPERO DATI INSERZIONE
 $sql_ins = "SELECT i.*, u.nome AS v_nome, u.cognome AS v_cognome 
             FROM inserzioni i 
             JOIN utenti u ON i.idUtente = u.idUtente 
@@ -24,8 +36,7 @@ if (!$inserzione) {
     die("Inserzione non trovata.");
 }
 
-// 2. Recupero TUTTI i SAPONI collegati a questa inserzione
-// Includiamo Categoria e Certificazione Bio per ogni singolo sapone
+// 4. RECUPERO SAPONI
 $sql_saponi = "SELECT s.*, c.nomeCategoria, cb.codiceStandard, cb.validita, img.percorso,
                GROUP_CONCAT(a.nomeAllergene SEPARATOR ', ') AS lista_allergeni
                FROM saponi s 
@@ -41,232 +52,81 @@ $stmt_sap->bind_param("i", $idInserzione);
 $stmt_sap->execute();
 $saponi = $stmt_sap->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/inserzione.css">
     <title><?php echo htmlspecialchars($inserzione['titolo']); ?> - SoapLab</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            color: #333;
-        }
-
-        header {
-            background: #fff;
-            padding: 15px 40px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .main-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* Box Inserzione */
-        .ins-header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ins-info h1 {
-            margin: 0;
-            color: #222;
-        }
-
-        .ins-info p {
-            color: #777;
-            margin: 5px 0 0 0;
-        }
-
-        .ins-price-box {
-            text-align: right;
-        }
-
-        .total-price {
-            font-size: 32px;
-            font-weight: bold;
-            color: #28a745;
-            display: block;
-        }
-
-        /* Lista Saponi */
-        .sapone-card {
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eee;
-        }
-
-        .sapone-img {
-            width: 250px;
-            height: 200px;
-            object-fit: cover;
-            background: #fafafa;
-        }
-
-        .sapone-content {
-            padding: 20px;
-            flex-grow: 1;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .badge-cat {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .badge-bio {
-            background: #fff3e0;
-            color: #e65100;
-            margin-left: 5px;
-        }
-
-        h2 {
-            margin: 0 0 10px 0;
-            color: #444;
-            font-size: 20px;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            font-size: 14px;
-        }
-
-        .label {
-            font-weight: bold;
-            color: #888;
-            display: block;
-        }
-
-        .btn-buy {
-            background: #28a745;
-            color: white;
-            padding: 15px 40px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 18px;
-            transition: 0.3s;
-            display: inline-block;
-        }
-
-        .btn-buy:hover {
-            background: #218838;
-            transform: scale(1.02);
-        }
-
-        .badge-allergene {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            margin-right: 5px;
-        }
-    </style>
 </head>
-
 <body>
 
     <header>
-        <a href="index.php" style="font-size: 24px;">SoapLab</a>
-        <a href="dashboard.php">La mia Dashboard</a>
+        <h1><a href="index.php" style="text-decoration:none; color:inherit;">SoapLab</a></h1>
+        <div class="dropdown">
+            <div class="user-icon">👤</div>
+            <div class="dropdown-content">
+                <?php if ($user): ?>
+                    <a href="dashboard.php" style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
+                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
+                    <a href="dashboard.php">La mia dashboard</a>
+                    <a href="indirizzi.php">I miei indirizzi</a>
+                    <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
+                    <a href="db/logout-process.php" class="logout-link">Logout</a>
+                <?php else: ?>
+                    <a href="login.html">Accedi</a>
+                    <a href="registrazione.html">Registrati</a>
+                <?php endif; ?>
+            </div>
+        </div>
     </header>
 
     <div class="main-container">
         <div class="ins-header">
             <div class="ins-info">
                 <h1><?php echo htmlspecialchars($inserzione['titolo']); ?></h1>
-                <p>Venduto da:
+                <p>Venduto da: 
                     <strong>
-                        <a href="profilo.php?id=<?php echo $inserzione['idUtente']; ?>"
-                            style="color: #2e7d32; text-decoration: none;">
+                        <a href="profilo.php?id=<?php echo $inserzione['idUtente']; ?>" style="color: #2e7d32; text-decoration: none;">
                             <?php echo htmlspecialchars($inserzione['v_nome'] . " " . $inserzione['v_cognome']); ?>
                         </a>
-                    </strong>
+                    </strong> 
                     | Peso Totale: <?php echo $inserzione['pesoComplessivo']; ?>g
                 </p>
             </div>
             <div class="ins-price-box">
                 <span class="total-price">€<?php echo number_format($inserzione['prezzoTotale'], 2); ?></span>
-                <a href="db/acquisto-process.php?id=<?php echo $inserzione['idInserzione']; ?>" class="btn-buy">Acquista
-                    Ora</a>
+                <a href="db/acquisto-process.php?id=<?php echo $idInserzione; ?>" class="btn-buy">Acquista Ora</a>
             </div>
         </div>
 
-        <h3>Prodotti inclusi nell'offerta:</h3>
+        <h3 style="margin-bottom: 20px; color: #444;">Prodotti inclusi nell'offerta:</h3>
 
         <?php while ($sapone = $saponi->fetch_assoc()): ?>
             <div class="sapone-card">
-                <?php
-                $path = !empty($sapone['percorso']) ? $sapone['percorso'] : 'https://via.placeholder.com/250x200?text=SoapLab';
-                ?>
+                <?php $path = !empty($sapone['percorso']) ? $sapone['percorso'] : 'https://via.placeholder.com/250x200?text=SoapLab'; ?>
                 <img src="<?php echo htmlspecialchars($path); ?>" class="sapone-img" alt="Foto Sapone">
 
                 <div class="sapone-content">
                     <span class="badge badge-cat"><?php echo htmlspecialchars($sapone['nomeCategoria']); ?></span>
                     <?php if ($sapone['codiceStandard']): ?>
-                        <span class="badge badge-bio">
-                            🍃 BIO: <?php echo htmlspecialchars($sapone['codiceStandard']); ?>
-                            (Scadenza: <?php echo date('d/m/Y', strtotime($sapone['validita'])); ?>)
-                        </span>
+                        <span class="badge badge-bio">🍃 BIO: <?php echo htmlspecialchars($sapone['codiceStandard']); ?></span>
                     <?php endif; ?>
 
                     <h2><?php echo htmlspecialchars($sapone['nomeCommerciale']); ?></h2>
 
                     <div class="details-grid">
-                        <div>
-                            <span class="label">Pelle consigliata</span>
-                            <?php echo htmlspecialchars($sapone['tipoPelleConsigliata'] ?? 'Tutti i tipi'); ?>
-                        </div>
-                        <div>
-                            <span class="label">ID Prodotto</span>
-                            #<?php echo $sapone['idSapone']; ?>
-                        </div>
-                        <div>
+                        <div><span class="label">Pelle consigliata</span><?php echo htmlspecialchars($sapone['tipoPelleConsigliata'] ?? 'Tutti i tipi'); ?></div>
+                        <div><span class="label">ID Prodotto</span>#<?php echo $sapone['idSapone']; ?></div>
+                        <div style="grid-column: span 2;">
                             <span class="label">Allergeni</span>
-                            <?php
+                            <?php 
                             if (!empty($sapone['lista_allergeni'])) {
                                 $array_all = explode(', ', $sapone['lista_allergeni']);
-                                foreach ($array_all as $all) {
-                                    echo '<span class="badge badge-allergene">' . htmlspecialchars($all) . '</span>';
-                                }
-                            } else {
-                                echo '<span style="color: #28a745; font-size: 13px;">✔ Nessun allergene</span>';
-                            }
+                                foreach ($array_all as $all) { echo '<span class="badge badge-allergene">' . htmlspecialchars($all) . '</span>'; }
+                            } else { echo '<span style="color: #28a745; font-size: 13px;">✔ Nessun allergene</span>'; }
                             ?>
                         </div>
                     </div>
@@ -274,7 +134,5 @@ $saponi = $stmt_sap->get_result();
             </div>
         <?php endwhile; ?>
     </div>
-
 </body>
-
 </html>

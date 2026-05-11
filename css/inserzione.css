@@ -1,0 +1,126 @@
+/* Box Inserzione */
+
+.main-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.ins-header {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ins-info h1 {
+    margin: 0;
+    color: #222;
+}
+
+.ins-info p {
+    color: #777;
+    margin: 5px 0 0 0;
+}
+
+.ins-price-box {
+    text-align: right;
+}
+
+.total-price {
+    font-size: 32px;
+    font-weight: bold;
+    color: #28a745;
+    display: block;
+}
+
+/* Lista Saponi */
+.sapone-card {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.sapone-img {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    background: #fafafa;
+}
+
+.sapone-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.badge-cat {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-bio {
+    background: #fff3e0;
+    color: #e65100;
+    margin-left: 5px;
+}
+
+h2 {
+    margin: 0 0 10px 0;
+    color: #444;
+    font-size: 20px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    font-size: 14px;
+}
+
+.label {
+    font-weight: bold;
+    color: #888;
+    display: block;
+}
+
+.btn-buy {
+    background: #28a745;
+    color: white;
+    padding: 15px 40px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-buy:hover {
+    background: #218838;
+    transform: scale(1.02);
+}
+
+.badge-allergene {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    margin-right: 5px;
+}

@@ -2,7 +2,6 @@
 session_start();
 require_once 'db/db.php';
 
-// Se l'utente non è loggato o mancano i parametri, lo rimandiamo indietro
 if (!isset($_SESSION['user_id']) || !isset($_GET['idAcq']) || !isset($_GET['idVend'])) {
     header("Location: dashboard.php");
     exit();
@@ -18,85 +17,8 @@ $idVenditore = (int) $_GET['idVend'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/lascia-recensione.css">
     <title>Lascia una Recensione - SoapLab</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .form-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #333;
-        }
-
-        p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #444;
-        }
-
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            margin-bottom: 20px;
-            font-family: inherit;
-        }
-
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-
-        .btn-back {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #777;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .btn-back:hover {
-            color: #333;
-        }
-    </style>
 </head>
 
 <body>

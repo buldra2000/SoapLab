@@ -1,0 +1,70 @@
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.top-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.top-card h1 {
+    color: #28a745;
+    text-align: center;
+    margin-bottom: 30px;
+    border: none;
+}
+
+.seller-row {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    transition: 0.3s;
+}
+
+.seller-row:hover {
+    background: #f9f9f9;
+    transform: translateX(10px);
+}
+
+.rank {
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    width: 50px;
+}
+
+.seller-info {
+    flex-grow: 1;
+}
+
+.seller-name {
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+}
+
+.seller-stats {
+    font-size: 14px;
+    color: #777;
+}
+
+.rating-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.empty-msg {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+    font-style: italic;
+}
