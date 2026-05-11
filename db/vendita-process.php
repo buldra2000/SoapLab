@@ -14,12 +14,10 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idUtente = $_SESSION['user_id'];
     
-    // 1. DATI DELL'INSERZIONE
     $titolo = trim($_POST['titolo']);
     $prezzo = floatval($_POST['prezzo']);
     $peso = intval($_POST['peso']);
     
-    // 2. DATI DEI SAPONI
     $nomi_saponi = $_POST['nome_sapone']; 
     $categorie = $_POST['categoria'];
     $pelli = $_POST['pelle'];
@@ -29,7 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->begin_transaction();
 
     try {
-        // --- CREAZIONE DELL'INSERZIONE ---
         $sql_ins = "INSERT INTO inserzioni (idUtente, titolo, prezzoTotale, pesoComplessivo) VALUES (?, ?, ?, ?)";
         $stmt_ins = $conn->prepare($sql_ins);
         $stmt_ins->bind_param("isdi", $idUtente, $titolo, $prezzo, $peso);
@@ -37,7 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idInserzione = $stmt_ins->insert_id; 
         $stmt_ins->close();
 
-        // --- CICLO PER OGNI SAPONE ---
         foreach ($nomi_saponi as $index => $nome_raw) {
             $nome_sapone = trim($nome_raw);
             $idCat = intval($categorie[$index]);
@@ -45,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $codBio = trim($codici_bio[$index]);
             $dataVscadenza = !empty($date_bio[$index]) ? $date_bio[$index] : null;
 
-            // Gestione Certificazione BIO
             $idCertificazione = null;
             if (!empty($codBio) && !empty($dataVscadenza)) {
                 $sql_bio = "INSERT INTO certificazioni_bio (codiceStandard, validita) VALUES (?, ?)";
@@ -56,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_bio->close();
             }
 
-            // Creazione del Sapone
             $sql_sap = "INSERT INTO saponi (idInserzione, idCategoria, idCertificazione, nomeCommerciale, tipoPelleConsigliata) VALUES (?, ?, ?, ?, ?)";
             $stmt_sap = $conn->prepare($sql_sap);
             $stmt_sap->bind_param("iiiss", $idInserzione, $idCat, $idCertificazione, $nome_sapone, $tipoPelle);
@@ -64,8 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idSapone = $stmt_sap->insert_id;
             $stmt_sap->close();
 
-            // --- NUOVO: GESTIONE ALLERGENI (Relazione PRESENTA) ---
-            // Recuperiamo l'array dinamico basato sull'indice del sapone (allergeni_0, allergeni_1...)
             $chiave_allergeni = "allergeni_" . $index;
             if (isset($_POST[$chiave_allergeni]) && is_array($_POST[$chiave_allergeni])) {
                 foreach ($_POST[$chiave_allergeni] as $idAllergene) {
@@ -77,7 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
 
-            // Gestione Immagine
             if (isset($_FILES['foto_sapone']['name'][$index]) && $_FILES['foto_sapone']['error'][$index] === UPLOAD_ERR_OK) {
                 $upload_dir = '../uploads/';
                 $file_name = time() . '_' . $index . '_' . basename($_FILES['foto_sapone']['name'][$index]);

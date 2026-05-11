@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // --- 1. CONTROLLO TABELLA UTENTI ---
     $sql_u = "SELECT idUtente, password, statoVendita FROM utenti WHERE email = ?";
     $stmt_u = $conn->prepare($sql_u);
     
@@ -20,10 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($user = $res_u->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
-            // (Opzionale) Controllo stato bloccato
             if ($user['statoVendita'] === 'bloccato') {
-                // header("Location: ../login.html?error=blocked");
-                // exit();
+                header("Location: ../login.html?error=blocked");
+                exit();
             }
             $_SESSION['user_id'] = $user['idUtente'];
             header("Location: ../dashboard.php");
@@ -34,8 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // --- 2. CONTROLLO TABELLA AMMINISTRATORE ---
-    // Se il codice arriva qui, l'email non era nella tabella utenti. Cerchiamo in amministratore.
     $sql_a = "SELECT idAdmin, password FROM amministratori WHERE email = ?";
     $stmt_a = $conn->prepare($sql_a);
     $stmt_a->bind_param("s", $email);
@@ -53,8 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // --- 3. NESSUN RISULTATO ---
-    // L'email non esiste in nessuna delle due tabelle
     header("Location: ../login.html?error=usernotfound");
     exit();
 
