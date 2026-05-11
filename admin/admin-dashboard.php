@@ -35,48 +35,9 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/admin-global.css">
+    <link rel="stylesheet" href="../css/admin-dashboard.css">
     <title>Pannello di Controllo - SoapLab</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .dashboard-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 35px;
-        }
-        .stat-card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: var(--card-shadow); 
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #E5E7EB;
-        }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 4px;
-        }
-        .stat-card.green::before { background: var(--accent); }
-        .stat-card.blue::before { background: #3B82F6; }
-        .stat-card.purple::before { background: #8B5CF6; }
-        
-        .stat-card h3 { 
-            margin: 0; 
-            color: var(--text-muted); 
-            font-size: 13px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-        .stat-card p { 
-            font-size: 32px; 
-            font-weight: 700; 
-            margin: 10px 0 0 0; 
-            color: var(--text-main); 
-        }
-    </style>
 </head>
 <body>
 

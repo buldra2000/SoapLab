@@ -50,29 +50,9 @@ $lista_utenti = $conn->query($sql_utenti);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/admin-global.css">
+    <link rel="stylesheet" href="../css/admin-utenti.css">
     <title>Moderazione Utenti - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: var(--card-shadow); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-        th { background-color: #F9FAFB; font-weight: 600; color: #6B7280; text-transform: uppercase; font-size: 12px; }
-        
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .badge-attivo { background: #D1FAE5; color: #065F46; }
-        .badge-bloccato { background: #FEE2E2; color: #991B1B; }
-        .badge-warning { background: #FEF3C7; color: #92400E; }
-        
-        .btn { padding: 8px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .btn-blocca { background: #EF4444; color: white; }
-        .btn-blocca:hover { background: #DC2626; }
-        .btn-sblocca { background: #10B981; color: white; }
-        .btn-sblocca:hover { background: #059669; }
-        .btn-disabled { background: #E5E7EB; color: #9CA3AF; cursor: not-allowed; }
-
-        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-weight: 500; }
-        .alert.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-    </style>
 </head>
 <body>
     <div class="sidebar">

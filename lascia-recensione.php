@@ -24,7 +24,7 @@ $idVenditore = (int) $_GET['idVend'];
 <body>
 
     <div class="form-card">
-        <h2>La tua opinione conta! ⭐</h2>
+        <h2>La tua opinione conta!</h2>
         <p>Valuta il venditore e l'esperienza di acquisto.</p>
 
         <form action="db/recensione-process.php" method="POST">
