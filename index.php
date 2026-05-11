@@ -2,19 +2,15 @@
 session_start();
 require_once 'db/db.php';
 
-// --- 1. RECUPERO CATEGORIE PER I FILTRI ---
 $sql_cat = "SELECT * FROM categorie ORDER BY nomeCategoria ASC";
 $res_cat = $conn->query($sql_cat);
 
-// --- 2. LOGICA DEL FILTRO (Requisito S4) ---
 $where_clause = "";
 if (isset($_GET['categoria']) && is_numeric($_GET['categoria'])) {
     $idFiltro = (int) $_GET['categoria'];
-    // Se c'è un filtro, aggiungiamo la condizione alla query [cite: 58-59]
     $where_clause = "WHERE c.idCategoria = $idFiltro";
 }
 
-// --- 3. QUERY DINAMICA INSERZIONI ---
 $sql = "SELECT i.idInserzione, i.titolo, i.prezzoTotale, i.pesoComplessivo, 
                c.nomeCategoria, c.idCategoria, img.percorso 
         FROM inserzioni i
@@ -27,7 +23,6 @@ $sql = "SELECT i.idInserzione, i.titolo, i.prezzoTotale, i.pesoComplessivo,
 
 $result = $conn->query($sql);
 
-// --- 4. RECUPERO DATI UTENTE ---
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $id = $_SESSION['user_id'];

@@ -1,5 +1,4 @@
 <?php
-// Abilitazione errori per il debug
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -7,7 +6,6 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
-// Controllo sessione utente
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -15,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// 1. Recupero dati utente per l'header
 $sql_user = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $user_id);
@@ -26,12 +23,9 @@ if (!$user) {
     die("Errore: Utente non trovato.");
 }
 
-// 2. Recupero lista allergeni per il form (Requisito S1)
 $sql_all = "SELECT idAllergene, nomeAllergene FROM allergeni ORDER BY nomeAllergene ASC";
 $res_all = $conn->query($sql_all);
 $allergeni = $res_all->fetch_all(MYSQLI_ASSOC);
-
-// 3. Recupero categorie per il select
 $sql_cat = "SELECT idCategoria, nomeCategoria FROM categorie ORDER BY nomeCategoria ASC";
 $res_cat = $conn->query($sql_cat);
 $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);

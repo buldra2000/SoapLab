@@ -19,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
         $stmt = $conn->prepare("INSERT INTO proprieta (nomeProprieta) VALUES (?)");
         $stmt->bind_param("s", $nome);
         if ($stmt->execute()) {
-            $messaggio = "<div class='alert success'>✅ Proprietà registrata!</div>";
+            $messaggio = "<div class='alert success'>Proprietà registrata!</div>";
         } else {
-            $messaggio = "<div class='alert error'>❌ Errore durante l'inserimento.</div>";
+            $messaggio = "<div class='alert error'>Errore durante l'inserimento.</div>";
         }
     }
 }

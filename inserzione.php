@@ -1,5 +1,4 @@
 <?php
-// 1. ABILITA ERRORI (Rimuovi in produzione)
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -13,7 +12,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idInserzione = (int) $_GET['id'];
 
-// 2. RECUPERO DATI UTENTE PER NAVBAR (Mancava!)
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $id = $_SESSION['user_id'];
@@ -21,7 +19,6 @@ if (isset($_SESSION['user_id'])) {
     if($res_user) $user = $res_user->fetch_assoc();
 }
 
-// 3. RECUPERO DATI INSERZIONE
 $sql_ins = "SELECT i.*, u.nome AS v_nome, u.cognome AS v_cognome 
             FROM inserzioni i 
             JOIN utenti u ON i.idUtente = u.idUtente 
@@ -36,7 +33,6 @@ if (!$inserzione) {
     die("Inserzione non trovata.");
 }
 
-// 4. RECUPERO SAPONI
 $sql_saponi = "SELECT s.*, c.nomeCategoria, cb.codiceStandard, cb.validita, img.percorso,
                GROUP_CONCAT(a.nomeAllergene SEPARATOR ', ') AS lista_allergeni
                FROM saponi s 

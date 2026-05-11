@@ -2,7 +2,6 @@
 session_start();
 require_once 'db/db.php';
 
-// --- RECUPERO DATI UTENTE LOGGATO PER NAVBAR ---
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
@@ -12,7 +11,6 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// --- QUERY TOP VENDITORI ---
 $sql_top = "SELECT u.nome, u.cognome, u.email, 
                    AVG(r.voto) AS media_voti, 
                    COUNT(r.idRecensione) AS numero_recensioni
@@ -45,7 +43,6 @@ $res_top = $conn->query($sql_top);
             <div class="user-icon">👤</div>
             <div class="dropdown-content">
                 <?php if (isset($user) && $user): ?>
-                    <!-- Nome Utente -->
                     <a href="dashboard.php" style="background: #f9f9f9; font-weight: bold; text-align: center;">
                         <?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?>
                     </a>
@@ -55,7 +52,6 @@ $res_top = $conn->query($sql_top);
                     <a href="indirizzi.php">I miei indirizzi</a>
                     <a href="top-venditori.php" style="color: #f39c12 !important;">🏆 Top Venditori</a>
 
-                    <!-- Link Logout con classe speciale -->
                     <a href="db/logout-process.php" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="login.html">Accedi</a>

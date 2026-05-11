@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
-// Controllo sicurezza ADMIN
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -14,19 +13,16 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
-// --- GESTIONE BLOCCO/SBLOCCO (MODIFICA_STATO_VENDITA) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione'])) {
     $idTarget = (int)$_POST['id_utente'];
     
     if ($_POST['azione'] == 'blocca') {
-        // L'admin blocca il venditore [cite: 105]
         $stmt = $conn->prepare("UPDATE utenti SET statoVendita = 'bloccato' WHERE idUtente = ?");
         $stmt->bind_param("i", $idTarget);
         if ($stmt->execute()) {
             $messaggio = "<div class='alert success'>Utente bloccato. Non potrà più vendere saponi.</div>";
         }
     } elseif ($_POST['azione'] == 'sblocca') {
-        // L'admin sblocca il venditore [cite: 108]
         $stmt = $conn->prepare("UPDATE utenti SET statoVendita = 'attivo' WHERE idUtente = ?");
         $stmt->bind_param("i", $idTarget);
         if ($stmt->execute()) {
@@ -35,7 +31,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione'])) {
     }
 }
 
-// --- RECUPERO DATI E CALCOLO RECENSIONI ---
 $sql_utenti = "
     SELECT u.idUtente, u.nome, u.cognome, u.email, u.statoVendita,
            -- Conta 1 solo se il voto è <= 2, altrimenti 0

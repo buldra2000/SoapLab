@@ -9,7 +9,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idProfilo = (int) $_GET['id'];
 
-// 1. Recupero dati base dell'utente (Nome, Cognome, Email, Stato) [cite: 114-118, 173-177]
 $sql_user = "SELECT nome, cognome, email, statoVendita FROM utenti WHERE idUtente = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $idProfilo);
@@ -20,28 +19,24 @@ if (!$user) {
     die("Utente non trovato.");
 }
 
-// 2. Conteggio VENDITE: quante volte le sue inserzioni sono state acquistate [cite: 137-140, 189]
 $sql_vendite = "SELECT COUNT(*) as tot FROM acquisti a JOIN inserzioni i ON a.idInserzione = i.idInserzione WHERE i.idUtente = ?";
 $stmt_v = $conn->prepare($sql_vendite);
 $stmt_v->bind_param("i", $idProfilo);
 $stmt_v->execute();
 $tot_vendite = $stmt_v->get_result()->fetch_assoc()['tot'];
 
-// 3. Conteggio ACQUISTI: quanti acquisti ha effettuato l'utente [cite: 187-189]
 $sql_acquisti = "SELECT COUNT(*) as tot FROM acquisti WHERE idUtente = ?";
 $stmt_a = $conn->prepare($sql_acquisti);
 $stmt_a->bind_param("i", $idProfilo);
 $stmt_a->execute();
 $tot_acquisti = $stmt_a->get_result()->fetch_assoc()['tot'];
 
-// 4. Media Recensioni e numero feedback ricevuti [cite: 26, 64, 233]
 $sql_feed = "SELECT AVG(voto) as media, COUNT(*) as num FROM recensioni WHERE idDestinatario = ?";
 $stmt_f = $conn->prepare($sql_feed);
 $stmt_f->bind_param("i", $idProfilo);
 $stmt_f->execute();
 $feedback = $stmt_f->get_result()->fetch_assoc();
 
-// 5. Elenco delle Inserzioni pubblicate dall'utente [cite: 41-43, 112]
 $sql_ins = "SELECT * FROM inserzioni WHERE idUtente = ? ORDER BY idInserzione DESC";
 $stmt_ins = $conn->prepare($sql_ins);
 $stmt_ins->bind_param("i", $idProfilo);
@@ -96,7 +91,6 @@ $inserzioni = $stmt_ins->get_result();
             color: #991b1b;
         }
 
-        /* Griglia Statistiche [cite: 65, 67] */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -126,7 +120,6 @@ $inserzioni = $stmt_ins->get_result();
             font-weight: 600;
         }
 
-        /* Griglia Inserzioni [cite: 43, 137, 223] */
         .ins-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;

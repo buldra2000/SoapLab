@@ -19,15 +19,12 @@ $stmt->execute();
 $result = $stmt->get_result();
 $admin = $result->fetch_assoc();
 
-// 1. Totale Ingredienti
 $res_ing = $conn->query("SELECT COUNT(*) as tot FROM ingredienti");
 $tot_ingredienti = $res_ing ? $res_ing->fetch_assoc()['tot'] : 0;
 
-// 2. Totale Utenti Registrati
 $res_utenti = $conn->query("SELECT COUNT(*) as tot FROM utenti");
 $tot_utenti = $res_utenti ? $res_utenti->fetch_assoc()['tot'] : 0;
 
-// 3. Totale Categorie
 $res_cat = $conn->query("SELECT COUNT(*) as tot FROM categorie");
 $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
 ?>
@@ -60,7 +57,6 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
         
         .admin-layout { display: flex; min-height: 100vh; }
         
-        /* Sidebar Styling */
         .sidebar { 
             width: 260px; 
             background: var(--sidebar-bg); 
@@ -131,7 +127,6 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
         .header-panel h1 { margin: 0; font-size: 24px; color: var(--text-main); font-weight: 600;}
         .header-panel p { margin: 6px 0 0 0; color: var(--text-muted); font-size: 14px; }
         
-        /* Stats Grid */
         .dashboard-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
@@ -170,17 +165,6 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
             margin: 10px 0 0 0; 
             color: var(--text-main); 
         }
-
-        /* Welcome Banner */
-        .welcome-banner {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            border-radius: 12px;
-            padding: 35px;
-            color: white;
-            box-shadow: var(--card-shadow);
-        }
-        .welcome-banner h2 { margin: 0 0 10px 0; font-size: 22px; }
-        .welcome-banner p { margin: 0; opacity: 0.9; font-size: 15px; line-height: 1.5; max-width: 600px; }
     </style>
 </head>
 <body>

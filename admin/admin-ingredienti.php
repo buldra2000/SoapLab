@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
-// Controllo di sicurezza: verifichiamo che sia loggato un ADMIN
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -14,10 +13,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
-// --- GESTIONE DEI FORM (INSERIMENTO DATI) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // 1. Inserimento nuovo Ingrediente
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_ingrediente') {
         $nome = trim($_POST['nome_ingrediente']);
         if (!empty($nome)) {
@@ -29,7 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 2. Inserimento nuovo Beneficio
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_beneficio') {
         $nome = trim($_POST['nome_beneficio']);
         if (!empty($nome)) {
@@ -41,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // --- NUOVO: 3. Inserimento nuovo Allergene (Requisito S1) ---
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_allergene') {
         $nome = trim($_POST['nome_allergene']);
         $tipo = trim($_POST['tipo_allergene']);
@@ -54,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // 4. Associazione Ingrediente - Beneficio
     if (isset($_POST['azione']) && $_POST['azione'] == 'associa') {
         $idIng = $_POST['id_ingrediente'];
         $idBen = $_POST['id_beneficio'];
@@ -68,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// --- RECUPERO DATI ---
 $ingredienti = $conn->query("SELECT * FROM ingredienti ORDER BY nomeIngrediente ASC");
 $benefici = $conn->query("SELECT * FROM benefici ORDER BY nomeBeneficio ASC");
 $lista_allergeni = $conn->query("SELECT * FROM allergeni ORDER BY nomeAllergene ASC");
@@ -90,7 +82,6 @@ $catalogo = $conn->query($catalogo_sql);
     <title>Gestione Catalogo - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* (Manteniamo i tuoi stili CSS esistenti) */
         :root { --sidebar-bg: #111827; --sidebar-hover: #1F2937; --accent: #10B981; --accent-hover: #059669; --bg-light: #F3F4F6; --text-main: #1F2937; --text-muted: #6B7280; --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-light); margin: 0; color: var(--text-main); }
         .admin-layout { display: flex; min-height: 100vh; }

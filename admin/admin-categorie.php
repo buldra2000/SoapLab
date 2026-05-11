@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
-// Controllo Admin
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -14,7 +13,6 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
-// --- GESTIONE INSERIMENTO ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['azione'] == 'nuova_categoria') {
     $nome = trim($_POST['nome_categoria']);
     if (!empty($nome)) {
@@ -28,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
     }
 }
 
-// --- RECUPERO DATI ---
 $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
 ?>
 <!DOCTYPE html>

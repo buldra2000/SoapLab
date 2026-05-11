@@ -13,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Recupero dati utente
 $sql = "SELECT nome, cognome, email, statoVendita FROM utenti WHERE idUtente = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -21,13 +20,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($user = $result->fetch_assoc()) {
-    // Dati caricati
 } else {
     die("Errore: Utente non trovato.");
 }
 $stmt->close();
 
-// --- 1. Calcolo Acquisti ---
 $sql_acquisti = "SELECT COUNT(*) AS num_acquisti FROM acquisti WHERE idUtente = ?";
 $stmt_acq = $conn->prepare($sql_acquisti);
 if ($stmt_acq) {
@@ -40,7 +37,6 @@ if ($stmt_acq) {
     $acquisti = 0;
 }
 
-// --- 2. Calcolo Vendite ---
 $sql_vendite = "SELECT COUNT(*) AS num_vendite 
                 FROM acquisti a 
                 JOIN inserzioni i ON a.idInserzione = i.idInserzione 
