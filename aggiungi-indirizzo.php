@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) { header("Location: login.html"); exit(); }
     <title>Aggiungi Indirizzo - SoapLab</title>
 </head>
 <body>
+    <!--Form per indirizzi -->
     <form action="db/address-process.php" method="POST">
         <h3>Nuovo Indirizzo</h3>
         
@@ -19,7 +20,9 @@ if (!isset($_SESSION['user_id'])) { header("Location: login.html"); exit(); }
         
         <input type="text" name="citta" placeholder="Città" required>
         
-        <input type="text" name="cap" placeholder="CAP" maxlength="5" required>
+        <input type="text" name="cap" placeholder="CAP" 
+                maxlength="5" pattern="\d{5}" 
+                title="Inserisci un CAP valido (5 cifre)" required>
         
         <button type="submit">Salva Indirizzo</button>
         

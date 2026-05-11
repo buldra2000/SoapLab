@@ -6,6 +6,10 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
+/**
+ * Admin - Ingredienti
+ */
+
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();

@@ -2,15 +2,27 @@
 session_start();
 require_once 'db/db.php';
 
+/**
+ * Top venditori
+ *  1) Recupero dati utente loggato
+ *  2) Query classifica: venditori con media > 4.0 e almeno 10 recensioni
+ */
+
+// 1) Recupero dati utente loggato
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $res_user = $conn->query("SELECT nome, cognome FROM utenti WHERE idUtente = $user_id");
+    $stmt_user = $conn->prepare("SELECT nome, cognome FROM utenti WHERE idUtente = ?");
+    $stmt_user->bind_param("i", $user_id);
+    $stmt_user->execute();
+    $res_user = $stmt_user->get_result();
     if ($res_user) {
         $user = $res_user->fetch_assoc();
     }
+    $stmt_user->close();
 }
 
+// 2) Query classifica: venditori con media > 4.0 e almeno 10 recensioni
 $sql_top = "SELECT u.nome, u.cognome, u.email, 
                    AVG(r.voto) AS media_voti, 
                    COUNT(r.idRecensione) AS numero_recensioni

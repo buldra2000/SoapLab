@@ -6,6 +6,14 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
+/**
+ * Admin - Utenti
+ *  1) Verifica utente admin loggato
+ *  2) Gestione POST blocca/sblocca
+ *  3) Recupero utenti con statistiche
+ */
+
+// 1) Verifica utente admin loggato
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -13,6 +21,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
+// 2) Gestione POST blocca/sblocca
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione'])) {
     $idTarget = (int)$_POST['id_utente'];
     
@@ -31,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione'])) {
     }
 }
 
+// 3) Recupero utenti con statistiche
 $sql_utenti = "
     SELECT u.idUtente, u.nome, u.cognome, u.email, u.statoVendita,
            -- Conta 1 solo se il voto è <= 2, altrimenti 0

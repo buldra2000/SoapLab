@@ -7,6 +7,10 @@ session_start();
 
 require_once 'db.php';
 
+/**
+ * Processo recensione.
+ */
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
     
     $idMittente = $_SESSION['user_id'];

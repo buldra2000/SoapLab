@@ -6,6 +6,10 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
+/**
+ * Vendita sapone
+ */
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -37,136 +41,13 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <title>Vendi Sapone - SoapLab</title>
     <link rel="stylesheet" href="css/global.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            color: #333;
-        }
-
-        header {
-            background: #fff;
-            padding: 15px 40px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .form-container {
-            max-width: 700px;
-            margin: 40px auto;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-
-        h2 {
-            margin-bottom: 25px;
-            color: #1f2937;
-            border-bottom: 2px solid #28a745;
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 600;
-            color: #4b5563;
-            font-size: 14px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 15px;
-        }
-
-        .sapone-block {
-            background: #f9fafb;
-            padding: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .allergeni-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
-            background: white;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            margin-top: 8px;
-        }
-
-        .allergen-item {
-            font-size: 13px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .allergen-item input {
-            width: auto;
-            margin: 0;
-        }
-
-        .btn-add {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .btn-submit {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        .btn-remove {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 100%;
-            font-size: 13px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/vendita-sapone.css">
 </head>
 
 <body>
 
     <header>
-        <h1><a href="index.php" style="text-decoration: none; color: inherit;">SoapLab</a></h1>
+        <h1><a href="index.php" style="text-decoration:none; color:inherit;">SoapLab</a></h1>
         <div class="dropdown">
             <div class="user-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -175,17 +56,13 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
             </svg>
             </div>
             <div class="dropdown-content">
-                <?php if (isset($user) && $user): ?>
-                    <a href="dashboard.php" style="text-align: center">
-                        <strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong>
-                    </a>
-                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">
-                        Vendi un sapone
-                    </a>
+                <?php if ($user): ?>
+                    <a href="dashboard.php" style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
+                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
                     <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
-                    <a href="db/logout-process.php" style="color: #dc3545;">Logout</a>
+                    <a href="db/logout-process.php" class="logout-link">Logout</a>
                 <?php else: ?>
                     <a href="login.html">Accedi</a>
                     <a href="registrazione.html">Registrati</a>
@@ -270,46 +147,58 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <script>
-        document.getElementById('btn-aggiungi-sapone').addEventListener('click', function () {
-            const container = document.getElementById('saponi-container');
-            const blocks = container.getElementsByClassName('sapone-block');
-            const index = blocks.length;
+    document.getElementById('btn-aggiungi-sapone').addEventListener('click', function () {
+        const container = document.getElementById('saponi-container');
+        const blocks = container.getElementsByClassName('sapone-block');
+        const index = blocks.length;
 
-            // Clonazione del primo blocco
-            const newBlock = blocks[0].cloneNode(true);
-            newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
+        // Clonazione del primo blocco
+        const newBlock = blocks[0].cloneNode(true);
+        newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
 
-            // Reset di tutti i campi input
-            newBlock.querySelectorAll('input').forEach(input => {
-                if (input.type === 'checkbox') {
-                    input.checked = false;
-                    // IMPORTANTE: Aggiorna l'indice per le checkbox degli allergeni
-                    input.name = `allergeni_${index}[]`;
-                } else if (input.type !== 'file') {
-                    input.value = '';
-                }
-            });
-
-            // Reset del select categoria
-            newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-
-            // Aggiunta tasto rimozione
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.innerText = 'Rimuovi questo sapone';
-            removeBtn.className = 'btn-remove';
-            removeBtn.onclick = function () {
-                newBlock.remove();
-                // Rinumera i titoli rimasti
-                Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
-                    b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
-                });
-            };
-
-            newBlock.appendChild(removeBtn);
-            container.appendChild(newBlock);
+        // Reset campi testo, numero, date, checkbox
+        newBlock.querySelectorAll('input').forEach(input => {
+            if (input.type === 'checkbox') {
+                input.checked = false;
+                input.name = `allergeni_${index}[]`;
+            } else if (input.type !== 'file') {
+                input.value = '';
+            }
         });
-    </script>
+
+        // Reset campo file (non resettabile con .value, va ricreato)
+        newBlock.querySelectorAll('input[type="file"]').forEach(input => {
+            const newInput = document.createElement('input');
+            newInput.type = 'file';
+            newInput.name = input.name;
+            newInput.accept = input.accept;
+            newInput.required = input.required;
+            input.replaceWith(newInput);
+        });
+
+        // Reset textarea
+        newBlock.querySelectorAll('textarea').forEach(t => t.value = '');
+
+        // Reset select categoria
+        newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+        // Aggiunta tasto rimozione
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerText = 'Rimuovi questo sapone';
+        removeBtn.className = 'btn-remove';
+        removeBtn.onclick = function () {
+            newBlock.remove();
+            // Rinumera i titoli rimasti
+            Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
+                b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
+            });
+        };
+
+        newBlock.appendChild(removeBtn);
+        container.appendChild(newBlock);
+    });
+</script>
 
 </body>
 

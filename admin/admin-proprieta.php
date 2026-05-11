@@ -6,6 +6,14 @@ error_reporting(E_ALL);
 session_start();
 require_once '../db/db.php';
 
+/**
+ * Admin - Proprietà
+ *  1) Verifica admin loggato
+ *  2) Gestione POST inserimento nuova proprietà
+ *  3) Recupero proprietà
+ */
+
+// 1) Verifica admin loggato
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -13,6 +21,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
+// 2) Gestione POST inserimento nuova proprietà
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['azione'] == 'nuova_proprieta') {
     $nome = trim($_POST['nome_proprieta']);
     if (!empty($nome)) {
@@ -26,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
     }
 }
 
+// 3) Recupero proprietà
 $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
 ?>
 <!DOCTYPE html>
