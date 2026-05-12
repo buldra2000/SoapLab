@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Creato il: Mar 25, 2026 alle 15:00
+-- Creato il: Mag 12, 2026 alle 13:04
 -- Versione del server: 10.4.28-MariaDB
 -- Versione PHP: 8.2.4
 
@@ -556,7 +556,9 @@ INSERT INTO `utenti` (`idUtente`, `nome`, `cognome`, `email`, `password`, `stato
 (2, 'Buldra', 'Buldra', 'buldra@gmail.com', '$2y$10$aVyljSHhiJ8AZgEPissG1O.1ByxPOAdLYHAOO.ib4jaLkO./ps4uy', 'attivo'),
 (3, 'Mario', 'Mario', 'Mario@gmail.com', '$2y$10$koTGr1hOyxfLGGKHyobPq.VFlWOrEpjNOe0sBSgw5hvnW7dvB8Dnm', 'attivo'),
 (7, 'Giacomo', 'Lollo', 'giacomo@gmail.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bloccato'),
-(8, 'Matteo', 'Buldrini', 'buldra00@icloud.com', '$2y$10$/R.AJYaG7Bs2tXYkVnwZE.WmzO4.jlns4U0Y.RiRZJ04BngHC.tbK', 'attivo');
+(8, 'Matteo', 'Buldrini', 'buldra00@icloud.com', '$2y$10$/R.AJYaG7Bs2tXYkVnwZE.WmzO4.jlns4U0Y.RiRZJ04BngHC.tbK', 'attivo'),
+(9, 'Federico', 'Rossi', 'federico.rossi@gmail.com', '$2y$10$1eHMSBHDjFGekhyFqZxgjOqFBGp3EWlUX7WId8ld6f2x8Nh3SH1E2', 'attivo'),
+(10, 'user', 'user', 'user@soaplab.it', '$2y$10$9a/Y0wsVoOsggl5l67JgZOwDIJVUar3aSjeOwAHV8BIJJVUxg.fQq', 'attivo');
 
 --
 -- Indici per le tabelle scaricate
@@ -709,7 +711,7 @@ ALTER TABLE `utenti`
 -- AUTO_INCREMENT per la tabella `acquisti`
 --
 ALTER TABLE `acquisti`
-  MODIFY `idAcquisto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `idAcquisto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT per la tabella `allergeni`
@@ -781,7 +783,7 @@ ALTER TABLE `proprieta`
 -- AUTO_INCREMENT per la tabella `recensioni`
 --
 ALTER TABLE `recensioni`
-  MODIFY `idRecensione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `idRecensione` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT per la tabella `saponi`
@@ -799,7 +801,7 @@ ALTER TABLE `spedizioni`
 -- AUTO_INCREMENT per la tabella `utenti`
 --
 ALTER TABLE `utenti`
-  MODIFY `idUtente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `idUtente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Limiti per le tabelle scaricate
