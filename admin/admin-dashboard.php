@@ -8,14 +8,19 @@ require_once '../db/db.php';
 
 /**
  * Admin - Dashboard
+ *  1) Verifica admin_id
+ *  2) Recupero informazioni profilo
+ *  3) Conteggi SQL (ingredienti, utenti, categorie)
  */
 
+// 1) Verifica admin_id
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
 }
 
 $admin_id = $_SESSION['admin_id'];
+// 2) Recupero informazioni profilo
 $sql = "SELECT nome, cognome FROM amministratori WHERE idAdmin = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $admin_id);
@@ -23,6 +28,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $admin = $result->fetch_assoc();
 
+// 3) Conteggi SQL (ingredienti, utenti, categorie)
 $res_ing = $conn->query("SELECT COUNT(*) as tot FROM ingredienti");
 $tot_ingredienti = $res_ing ? $res_ing->fetch_assoc()['tot'] : 0;
 

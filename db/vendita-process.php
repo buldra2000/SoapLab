@@ -8,27 +8,47 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 session_start();
 require_once 'db.php'; 
 
+/**
+ * Processo vendita.
+ *  1) Verifica user_id
+ *  2) Verifica richiesta POST
+ *  3) Recupero, pulizia e conversione dati
+ *  4) Recupero array
+ *  5) Transazione
+ *  6) Inserimento inserzione
+ *  7) Ciclo saponi
+ *  8) Certificazione BIO
+ *  9) Inserimento sapone
+ *  10) Gestione allergeni
+ */
+
+// 1) Verifica user_id
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.html");
     exit();
 }
 
+// 2) Verifica richiesta POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idUtente = $_SESSION['user_id'];
     
+    // 3) Recupero, pulizia e conversione dati
     $titolo = trim($_POST['titolo']);
     $prezzo = floatval($_POST['prezzo']);
     $peso = intval($_POST['peso']);
     
+    // 4) Recupero array
     $nomi_saponi = $_POST['nome_sapone']; 
     $categorie = $_POST['categoria'];
     $pelli = $_POST['pelle'];
     $codici_bio = $_POST['codice_bio'];
     $date_bio = $_POST['data_bio'];
     
+    // 5) Transazione
     $conn->begin_transaction();
 
     try {
+        // 6) Inserimento inserzione
         $sql_ins = "INSERT INTO inserzioni (idUtente, titolo, prezzoTotale, pesoComplessivo) VALUES (?, ?, ?, ?)";
         $stmt_ins = $conn->prepare($sql_ins);
         $stmt_ins->bind_param("isdi", $idUtente, $titolo, $prezzo, $peso);
@@ -36,13 +56,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idInserzione = $stmt_ins->insert_id; 
         $stmt_ins->close();
 
+        // 7) Ciclo saponi
         foreach ($nomi_saponi as $index => $nome_raw) {
             $nome_sapone = trim($nome_raw);
             $idCat = intval($categorie[$index]);
             $tipoPelle = trim($pelli[$index]);
             $codBio = trim($codici_bio[$index]);
             $dataVscadenza = !empty($date_bio[$index]) ? $date_bio[$index] : null;
-
+            
+            // 8) Certificazione BIO
             $idCertificazione = null;
             if (!empty($codBio) && !empty($dataVscadenza)) {
                 $sql_bio = "INSERT INTO certificazioni_bio (codiceStandard, validita) VALUES (?, ?)";
@@ -53,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt_bio->close();
             }
 
+            // 9) Inserimento sapone
             $sql_sap = "INSERT INTO saponi (idInserzione, idCategoria, idCertificazione, nomeCommerciale, tipoPelleConsigliata) VALUES (?, ?, ?, ?, ?)";
             $stmt_sap = $conn->prepare($sql_sap);
             $stmt_sap->bind_param("iiiss", $idInserzione, $idCat, $idCertificazione, $nome_sapone, $tipoPelle);
@@ -60,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $idSapone = $stmt_sap->insert_id;
             $stmt_sap->close();
 
+            // 10) Gestione allergeni
             $chiave_allergeni = "allergeni_" . $index;
             if (isset($_POST[$chiave_allergeni]) && is_array($_POST[$chiave_allergeni])) {
                 foreach ($_POST[$chiave_allergeni] as $idAllergene) {

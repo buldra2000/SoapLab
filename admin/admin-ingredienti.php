@@ -8,8 +8,17 @@ require_once '../db/db.php';
 
 /**
  * Admin - Ingredienti
+ *  1) Controllo admin_id
+ *  2) Gestione richieste POST
+ *      2.1) Inserimento ingrediente
+ *      2.2) Inserimento beneficio
+ *      2.3) Inserimento allergene
+ *      2.4) Associazione ingrediente - beneficio
+ *  3) Recupero dati
+ *  4) Query JOIN recupero ingredienti concatenando benefici
  */
 
+// 1) Controllo admin_id
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -17,7 +26,10 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
+// 2) Gestione richieste POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // 2.1) Inserimento ingrediente
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_ingrediente') {
         $nome = trim($_POST['nome_ingrediente']);
         if (!empty($nome)) {
@@ -29,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // 2.2) Inserimento beneficio
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_beneficio') {
         $nome = trim($_POST['nome_beneficio']);
         if (!empty($nome)) {
@@ -40,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // 2.3) Inserimento allergene
     if (isset($_POST['azione']) && $_POST['azione'] == 'nuovo_allergene') {
         $nome = trim($_POST['nome_allergene']);
         $tipo = trim($_POST['tipo_allergene']);
@@ -52,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // 2.4) Associazione ingrediente - beneficio
     if (isset($_POST['azione']) && $_POST['azione'] == 'associa') {
         $idIng = $_POST['id_ingrediente'];
         $idBen = $_POST['id_beneficio'];
@@ -65,10 +80,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// 3) Recupero dati
 $ingredienti = $conn->query("SELECT * FROM ingredienti ORDER BY nomeIngrediente ASC");
 $benefici = $conn->query("SELECT * FROM benefici ORDER BY nomeBeneficio ASC");
 $lista_allergeni = $conn->query("SELECT * FROM allergeni ORDER BY nomeAllergene ASC");
 
+// 4) Query JOIN recupero ingredienti concatenando benefici
 $catalogo_sql = "
     SELECT i.nomeIngrediente, GROUP_CONCAT(b.nomeBeneficio SEPARATOR ', ') as benefici_associati
     FROM ingredienti i

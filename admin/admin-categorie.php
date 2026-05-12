@@ -8,8 +8,12 @@ require_once '../db/db.php';
 
 /**
  * Admin - Categorie
+ *  1) Controllo admin_id
+ *  2) Verifica richiesta POST e pulizia
+ *  3) Recupero dati
  */
 
+ // 1) Controllo admin_id
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -17,6 +21,7 @@ if (!isset($_SESSION['admin_id'])) {
 
 $messaggio = "";
 
+// 2) Verifica richiesta POST e pulizia
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['azione'] == 'nuova_categoria') {
     $nome = trim($_POST['nome_categoria']);
     if (!empty($nome)) {
@@ -30,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['azione']) && $_POST['a
     }
 }
 
+// 3) Recupero dati
 $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
 ?>
 <!DOCTYPE html>
