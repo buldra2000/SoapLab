@@ -247,7 +247,7 @@ if ($stmt_pub) {
                                             <br>
                                             <a href="lascia-recensione.php?idAcq=<?php echo $ordine['idAcquisto']; ?>&idVend=<?php echo $ordine['idVenditore']; ?>"
                                                 style="display: inline-block; margin-top: 5px; color: #28a745; font-weight: bold; text-decoration: none; font-size: 12px;">
-                                                ⭐ Recensisci
+                                                Recensisci
                                             </a>
                                         <?php elseif (!empty($ordine['idRecensione'])): ?>
                                             <br><small style="color: #888;">Recensione inviata</small>
