@@ -13,7 +13,7 @@ require_once '../db/db.php';
  *  3) Recupero dati
  */
 
- // 1) Controllo admin_id
+// 1) Controllo admin_id
 if (!isset($_SESSION['admin_id'])) {
     header("Location: login.html");
     exit();
@@ -40,6 +40,7 @@ $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
 ?>
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +48,7 @@ $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
     <title>Gestione Categorie - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
@@ -92,7 +94,7 @@ $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($cat = $categorie->fetch_assoc()): ?>
+                        <?php while ($cat = $categorie->fetch_assoc()): ?>
                             <tr>
                                 <td style="color: #9CA3AF;">#<?php echo $cat['idCategoria']; ?></td>
                                 <td style="font-weight: 500;"><?php echo htmlspecialchars($cat['nomeCategoria']); ?></td>
@@ -104,4 +106,5 @@ $categorie = $conn->query("SELECT * FROM categorie ORDER BY idCategoria ASC");
         </div>
     </div>
 </body>
+
 </html>

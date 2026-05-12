@@ -26,7 +26,8 @@ $user = null;
 if (isset($_SESSION['user_id'])) {
     $id = $_SESSION['user_id'];
     $res_user = $conn->query("SELECT nome, cognome FROM utenti WHERE idUtente = $id");
-    if($res_user) $user = $res_user->fetch_assoc();
+    if ($res_user)
+        $user = $res_user->fetch_assoc();
 }
 
 // 4) Query inserzione
@@ -62,6 +63,7 @@ $saponi = $stmt_sap->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,21 +71,25 @@ $saponi = $stmt_sap->get_result();
     <link rel="stylesheet" href="css/inserzione.css">
     <title><?php echo htmlspecialchars($inserzione['titolo']); ?> - SoapLab</title>
 </head>
+
 <body>
 
     <header>
         <h1><a href="index.php" style="text-decoration:none; color:inherit;">SoapLab</a></h1>
         <div class="dropdown">
             <div class="user-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             </div>
             <div class="dropdown-content">
                 <?php if ($user): ?>
-                    <a href="dashboard.php" style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
-                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
+                    <a href="dashboard.php"
+                        style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
+                    <a href="vendita-sapone.php"
+                        style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
                     <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
@@ -100,12 +106,13 @@ $saponi = $stmt_sap->get_result();
         <div class="ins-header">
             <div class="ins-info">
                 <h1><?php echo htmlspecialchars($inserzione['titolo']); ?></h1>
-                <p>Venduto da: 
+                <p>Venduto da:
                     <strong>
-                        <a href="profilo.php?id=<?php echo $inserzione['idUtente']; ?>" style="color: #2e7d32; text-decoration: none;">
+                        <a href="profilo.php?id=<?php echo $inserzione['idUtente']; ?>"
+                            style="color: #2e7d32; text-decoration: none;">
                             <?php echo htmlspecialchars($inserzione['v_nome'] . " " . $inserzione['v_cognome']); ?>
                         </a>
-                    </strong> 
+                    </strong>
                     | Peso Totale: <?php echo $inserzione['pesoComplessivo']; ?>g
                 </p>
             </div>
@@ -131,15 +138,21 @@ $saponi = $stmt_sap->get_result();
                     <h2><?php echo htmlspecialchars($sapone['nomeCommerciale']); ?></h2>
 
                     <div class="details-grid">
-                        <div><span class="label">Pelle consigliata</span><?php echo htmlspecialchars($sapone['tipoPelleConsigliata'] ?? 'Tutti i tipi'); ?></div>
+                        <div><span class="label">Pelle
+                                consigliata</span><?php echo htmlspecialchars($sapone['tipoPelleConsigliata'] ?? 'Tutti i tipi'); ?>
+                        </div>
                         <div><span class="label">ID Prodotto</span>#<?php echo $sapone['idSapone']; ?></div>
                         <div style="grid-column: span 2;">
                             <span class="label">Allergeni</span>
-                            <?php 
+                            <?php
                             if (!empty($sapone['lista_allergeni'])) {
                                 $array_all = explode(', ', $sapone['lista_allergeni']);
-                                foreach ($array_all as $all) { echo '<span class="badge badge-allergene">' . htmlspecialchars($all) . '</span>'; }
-                            } else { echo '<span style="color: #28a745; font-size: 13px;">✔ Nessun allergene</span>'; }
+                                foreach ($array_all as $all) {
+                                    echo '<span class="badge badge-allergene">' . htmlspecialchars($all) . '</span>';
+                                }
+                            } else {
+                                echo '<span style="color: #28a745; font-size: 13px;">✔ Nessun allergene</span>';
+                            }
                             ?>
                         </div>
                     </div>
@@ -148,4 +161,5 @@ $saponi = $stmt_sap->get_result();
         <?php endwhile; ?>
     </div>
 </body>
+
 </html>

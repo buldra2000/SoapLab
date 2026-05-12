@@ -98,6 +98,7 @@ $catalogo = $conn->query($catalogo_sql);
 ?>
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,6 +106,7 @@ $catalogo = $conn->query($catalogo_sql);
     <title>Gestione Catalogo - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <div class="admin-layout">
@@ -132,7 +134,7 @@ $catalogo = $conn->query($catalogo_sql);
             <?php echo $messaggio; ?>
 
             <div class="content-grid">
-                
+
                 <div>
                     <div class="card" style="border-top: 4px solid #F87171;">
                         <h3>Aggiungi Allergene</h3>
@@ -161,14 +163,18 @@ $catalogo = $conn->query($catalogo_sql);
                             <input type="hidden" name="azione" value="associa">
                             <label>Ingrediente</label>
                             <select name="id_ingrediente" required>
-                                <?php $ingredienti->data_seek(0); while($ing = $ingredienti->fetch_assoc()): ?>
-                                    <option value="<?php echo $ing['idIngrediente']; ?>"><?php echo htmlspecialchars($ing['nomeIngrediente']); ?></option>
+                                <?php $ingredienti->data_seek(0);
+                                while ($ing = $ingredienti->fetch_assoc()): ?>
+                                    <option value="<?php echo $ing['idIngrediente']; ?>">
+                                        <?php echo htmlspecialchars($ing['nomeIngrediente']); ?></option>
                                 <?php endwhile; ?>
                             </select>
                             <label>Effetto Benefico</label>
                             <select name="id_beneficio" required>
-                                <?php $benefici->data_seek(0); while($ben = $benefici->fetch_assoc()): ?>
-                                    <option value="<?php echo $ben['idBeneficio']; ?>"><?php echo htmlspecialchars($ben['nomeBeneficio']); ?></option>
+                                <?php $benefici->data_seek(0);
+                                while ($ben = $benefici->fetch_assoc()): ?>
+                                    <option value="<?php echo $ben['idBeneficio']; ?>">
+                                        <?php echo htmlspecialchars($ben['nomeBeneficio']); ?></option>
                                 <?php endwhile; ?>
                             </select>
                             <button type="submit" style="background: #8B5CF6;">Collega</button>
@@ -181,13 +187,19 @@ $catalogo = $conn->query($catalogo_sql);
                         <h3>Allergeni Censiti</h3>
                         <table>
                             <thead>
-                                <tr><th>Nome</th><th>Tipo</th></tr>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Tipo</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                <?php while($all = $lista_allergeni->fetch_assoc()): ?>
+                                <?php while ($all = $lista_allergeni->fetch_assoc()): ?>
                                     <tr>
-                                        <td><span class="badge badge-red"><?php echo htmlspecialchars($all['nomeAllergene']); ?></span></td>
-                                        <td style="color: #6B7280; font-size: 12px;"><?php echo htmlspecialchars($all['tipo']); ?></td>
+                                        <td><span
+                                                class="badge badge-red"><?php echo htmlspecialchars($all['nomeAllergene']); ?></span>
+                                        </td>
+                                        <td style="color: #6B7280; font-size: 12px;">
+                                            <?php echo htmlspecialchars($all['tipo']); ?></td>
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
@@ -198,16 +210,20 @@ $catalogo = $conn->query($catalogo_sql);
                         <h3>Catalogo Associazioni</h3>
                         <table>
                             <thead>
-                                <tr><th>Ingrediente</th><th>Benefici</th></tr>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Benefici</th>
+                                </tr>
                             </thead>
                             <tbody>
-                                <?php while($row = $catalogo->fetch_assoc()): ?>
+                                <?php while ($row = $catalogo->fetch_assoc()): ?>
                                     <tr>
-                                        <td style="font-weight: 500;"><?php echo htmlspecialchars($row['nomeIngrediente']); ?></td>
+                                        <td style="font-weight: 500;">
+                                            <?php echo htmlspecialchars($row['nomeIngrediente']); ?></td>
                                         <td>
-                                            <?php 
+                                            <?php
                                             if ($row['benefici_associati']) {
-                                                foreach(explode(', ', $row['benefici_associati']) as $b) {
+                                                foreach (explode(', ', $row['benefici_associati']) as $b) {
                                                     echo "<span class='badge'>$b</span>";
                                                 }
                                             }
@@ -224,4 +240,5 @@ $catalogo = $conn->query($catalogo_sql);
         </div>
     </div>
 </body>
+
 </html>

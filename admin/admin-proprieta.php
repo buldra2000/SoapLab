@@ -40,6 +40,7 @@ $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
 ?>
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +48,7 @@ $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
     <title>Gestione Proprietà - SoapLab Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
@@ -92,7 +94,7 @@ $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($prop = $proprieta->fetch_assoc()): ?>
+                        <?php while ($prop = $proprieta->fetch_assoc()): ?>
                             <tr>
                                 <td style="color: #9CA3AF;">#<?php echo $prop['idProprieta']; ?></td>
                                 <td style="font-weight: 500;"><?php echo htmlspecialchars($prop['nomeProprieta']); ?></td>
@@ -104,4 +106,5 @@ $proprieta = $conn->query("SELECT * FROM proprieta ORDER BY nomeProprieta ASC");
         </div>
     </div>
 </body>
+
 </html>

@@ -134,10 +134,11 @@ if ($stmt_pub) {
         <h1>SoapLab</h1>
         <div class="dropdown">
             <div class="user-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             </div>
             <div class="dropdown-content">
                 <a href="index.php" style="text-align: center; background: #f8f9fa;">
@@ -165,7 +166,7 @@ if ($stmt_pub) {
             <div class="alert alert-success">Registrazione completata! Benvenuto in SoapLab.</div>
         <?php endif; ?>
     <?php endif; ?>
-    
+
     <!-- Statistiche utente -> Vendite, acquisti, rating, stato -->
     <div class="container">
         <h2>Benvenuto, <?php echo htmlspecialchars($user['nome']); ?>!</h2>
@@ -267,7 +268,7 @@ if ($stmt_pub) {
                     <p style="color: #888; font-style: italic;">Non hai ancora effettuato acquisti.</p>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Recupero inserzioni -->
             <div class="orders-section" style="margin-top: 40px;">
                 <h3>Le mie pubblicazioni</h3>
@@ -303,7 +304,7 @@ if ($stmt_pub) {
                     </p>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Logout - Elimina utente -->
             <div style="text-align: center; margin-top: 30px;">
                 <a href="db/logout-process.php" class="btn btn-logout">Logout</a>

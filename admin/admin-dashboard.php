@@ -41,6 +41,7 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
 
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,6 +50,7 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
     <title>Pannello di Controllo - SoapLab</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
     <div class="admin-layout">
@@ -73,7 +75,8 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
                     <h1>Bentornato, <?php echo htmlspecialchars($admin['nome']); ?></h1>
                     <p>Panoramica del sistema e gestione della piattaforma.</p>
                 </div>
-                <div style="background: #E5E7EB; padding: 10px 15px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                <div
+                    style="background: #E5E7EB; padding: 10px 15px; border-radius: 8px; font-weight: 600; font-size: 14px;">
                     📅 <?php echo date('d/m/Y'); ?>
                 </div>
             </div>
@@ -94,4 +97,5 @@ $tot_categorie = $res_cat ? $res_cat->fetch_assoc()['tot'] : 0;
         </div>
     </div>
 </body>
+
 </html>

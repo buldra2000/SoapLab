@@ -56,15 +56,18 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
         <h1><a href="index.php" style="text-decoration:none; color:inherit;">SoapLab</a></h1>
         <div class="dropdown">
             <div class="user-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
             </div>
             <div class="dropdown-content">
                 <?php if ($user): ?>
-                    <a href="dashboard.php" style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
-                    <a href="vendita-sapone.php" style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
+                    <a href="dashboard.php"
+                        style="text-align: center"><strong><?php echo htmlspecialchars($user['nome'] . ' ' . $user['cognome']); ?></strong></a>
+                    <a href="vendita-sapone.php"
+                        style="color: #28a745; font-weight: bold; border-bottom: 1px solid #eee;">Vendi un sapone</a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
                     <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
@@ -153,58 +156,58 @@ $categorie = $res_cat->fetch_all(MYSQLI_ASSOC);
     </div>
 
     <script>
-    document.getElementById('btn-aggiungi-sapone').addEventListener('click', function () {
-        const container = document.getElementById('saponi-container');
-        const blocks = container.getElementsByClassName('sapone-block');
-        const index = blocks.length;
+        document.getElementById('btn-aggiungi-sapone').addEventListener('click', function () {
+            const container = document.getElementById('saponi-container');
+            const blocks = container.getElementsByClassName('sapone-block');
+            const index = blocks.length;
 
-        // Clonazione del primo blocco
-        const newBlock = blocks[0].cloneNode(true);
-        newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
+            // Clonazione del primo blocco
+            const newBlock = blocks[0].cloneNode(true);
+            newBlock.querySelector('h4').innerText = 'Sapone ' + (index + 1);
 
-        // Reset campi testo, numero, date, checkbox
-        newBlock.querySelectorAll('input').forEach(input => {
-            if (input.type === 'checkbox') {
-                input.checked = false;
-                input.name = `allergeni_${index}[]`;
-            } else if (input.type !== 'file') {
-                input.value = '';
-            }
-        });
-
-        // Reset campo file (non resettabile con .value, va ricreato)
-        newBlock.querySelectorAll('input[type="file"]').forEach(input => {
-            const newInput = document.createElement('input');
-            newInput.type = 'file';
-            newInput.name = input.name;
-            newInput.accept = input.accept;
-            newInput.required = input.required;
-            input.replaceWith(newInput);
-        });
-
-        // Reset textarea
-        newBlock.querySelectorAll('textarea').forEach(t => t.value = '');
-
-        // Reset select categoria
-        newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-
-        // Aggiunta tasto rimozione
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.innerText = 'Rimuovi questo sapone';
-        removeBtn.className = 'btn-remove';
-        removeBtn.onclick = function () {
-            newBlock.remove();
-            // Rinumera i titoli rimasti
-            Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
-                b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
+            // Reset campi testo, numero, date, checkbox
+            newBlock.querySelectorAll('input').forEach(input => {
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                    input.name = `allergeni_${index}[]`;
+                } else if (input.type !== 'file') {
+                    input.value = '';
+                }
             });
-        };
 
-        newBlock.appendChild(removeBtn);
-        container.appendChild(newBlock);
-    });
-</script>
+            // Reset campo file (non resettabile con .value, va ricreato)
+            newBlock.querySelectorAll('input[type="file"]').forEach(input => {
+                const newInput = document.createElement('input');
+                newInput.type = 'file';
+                newInput.name = input.name;
+                newInput.accept = input.accept;
+                newInput.required = input.required;
+                input.replaceWith(newInput);
+            });
+
+            // Reset textarea
+            newBlock.querySelectorAll('textarea').forEach(t => t.value = '');
+
+            // Reset select categoria
+            newBlock.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+            // Aggiunta tasto rimozione
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.innerText = 'Rimuovi questo sapone';
+            removeBtn.className = 'btn-remove';
+            removeBtn.onclick = function () {
+                newBlock.remove();
+                // Rinumera i titoli rimasti
+                Array.from(container.getElementsByClassName('sapone-block')).forEach((b, i) => {
+                    b.querySelector('h4').innerText = 'Sapone ' + (i + 1);
+                });
+            };
+
+            newBlock.appendChild(removeBtn);
+            container.appendChild(newBlock);
+        });
+    </script>
 
 </body>
 
