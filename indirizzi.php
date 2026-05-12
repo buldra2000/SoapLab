@@ -74,7 +74,7 @@ $result = $stmt_addr->get_result();
                     </a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
-                    <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
+                    <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">Top Venditori</a>
                     <a href="db/logout-process.php" style="color: #dc3545;">Logout</a>
                 <?php else: ?>
                     <a href="login.html">Accedi</a>

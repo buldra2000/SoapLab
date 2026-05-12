@@ -68,7 +68,7 @@ $res_top = $conn->query($sql_top);
                     <a href="vendita-sapone.php">Vendi un sapone</a>
                     <a href="dashboard.php">La mia dashboard</a>
                     <a href="indirizzi.php">I miei indirizzi</a>
-                    <a href="top-venditori.php" style="color: #f39c12 !important;">🏆 Top Venditori</a>
+                    <a href="top-venditori.php" style="color: #f39c12 !important;">Top Venditori</a>
 
                     <a href="db/logout-process.php" class="logout-link">Logout</a>
                 <?php else: ?>

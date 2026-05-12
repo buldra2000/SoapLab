@@ -153,7 +153,7 @@ if ($stmt_pub) {
 
                 <a href="dashboard.php">La mia dashboard</a>
                 <a href="indirizzi.php">I miei indirizzi</a>
-                <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">🏆 Top Venditori</a>
+                <a href="top-venditori.php" style="color: #f39c12; font-weight: bold;">Top Venditori</a>
                 <a href="db/logout-process.php" style="color: #dc3545; border-top: 1px solid #eee;">Logout</a>
             </div>
         </div>
