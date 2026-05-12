@@ -7,9 +7,13 @@ session_start();
 require_once 'db/db.php';
 
 /**
- * Vendita sapone
+ * Vendita sapone.
+ *  1) Controllo user_id
+ *  2) Informazioni venditore
+ *  3) Recupero opzioni DB (lista allergeni e categorie)
  */
 
+// 1) Controllo user_id
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -17,6 +21,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// 2) Informazioni venditore
 $sql_user = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $user_id);
@@ -27,6 +32,7 @@ if (!$user) {
     die("Errore: Utente non trovato.");
 }
 
+// 3) Recupero opzioni DB (lista allergeni e categorie)
 $sql_all = "SELECT idAllergene, nomeAllergene FROM allergeni ORDER BY nomeAllergene ASC";
 $res_all = $conn->query($sql_all);
 $allergeni = $res_all->fetch_all(MYSQLI_ASSOC);
