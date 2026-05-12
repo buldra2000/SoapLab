@@ -6,6 +6,14 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
+/**
+ * Gestione indirizzi utente.
+ *  1) Controllo user_id
+ *  2) Recupero informazioni utente
+ *  3) Recupero indirizzi
+ */
+
+// 1) Controllo user_id
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.html");
     exit();
@@ -13,6 +21,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// 2) Recupero informazioni utente
 $sql_user = "SELECT nome, cognome FROM utenti WHERE idUtente = ?";
 $stmt_user = $conn->prepare($sql_user);
 $stmt_user->bind_param("i", $user_id);
@@ -24,6 +33,7 @@ if (!$user) {
     die("Errore: Utente non trovato.");
 }
 
+// 3) Recupero indirizzi
 $sql_addr = "SELECT * FROM indirizzi WHERE idUtente = ?";
 $stmt_addr = $conn->prepare($sql_addr);
 $stmt_addr->bind_param("i", $user_id);

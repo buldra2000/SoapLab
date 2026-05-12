@@ -5,6 +5,15 @@ error_reporting(E_ALL);
 session_start();
 require_once 'db/db.php';
 
+/**
+ * Inserzione utente.
+ *  1) Verifica id
+ *  2) Recupero inserzione
+ *  3) Stato utente
+ *  4) Query inserzione
+ *  5) Controllo esistenza
+ */
+
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php");
     exit();
@@ -12,6 +21,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idInserzione = (int) $_GET['id'];
 
+// 3) Stato utente
 $user = null;
 if (isset($_SESSION['user_id'])) {
     $id = $_SESSION['user_id'];
@@ -19,6 +29,7 @@ if (isset($_SESSION['user_id'])) {
     if($res_user) $user = $res_user->fetch_assoc();
 }
 
+// 4) Query inserzione
 $sql_ins = "SELECT i.*, u.nome AS v_nome, u.cognome AS v_cognome 
             FROM inserzioni i 
             JOIN utenti u ON i.idUtente = u.idUtente 
@@ -29,6 +40,7 @@ $stmt_ins->execute();
 $res_ins = $stmt_ins->get_result();
 $inserzione = $res_ins->fetch_assoc();
 
+// 5) Controllo esistenza
 if (!$inserzione) {
     die("Inserzione non trovata.");
 }

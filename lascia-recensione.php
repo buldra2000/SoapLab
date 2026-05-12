@@ -2,11 +2,19 @@
 session_start();
 require_once 'db/db.php';
 
+/**
+ * Lascia recensione.
+ *  1) Controllo user_id, id acquisto e id venditore
+ *  2) Assegnazione e conversione
+ */
+
+// 1) Controllo user_id, id acquisto e id venditore
 if (!isset($_SESSION['user_id']) || !isset($_GET['idAcq']) || !isset($_GET['idVend'])) {
     header("Location: dashboard.php");
     exit();
 }
 
+// 2) Assegnazione e conversione
 $idAcquisto = (int) $_GET['idAcq'];
 $idVenditore = (int) $_GET['idVend'];
 ?>
