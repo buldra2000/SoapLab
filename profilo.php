@@ -86,7 +86,8 @@ $inserzioni = $stmt_ins->get_result();
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h1 style="margin: 0; font-size: 28px;">
-                        <?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?></h1>
+                        <?php echo htmlspecialchars($user['nome'] . " " . $user['cognome']); ?>
+                    </h1>
                     <p style="color: #6b7280; margin: 5px 0;"><?php echo htmlspecialchars($user['email']); ?></p>
                     <span class="status-badge status-<?php echo strtolower($user['statoVendita']); ?>">
                         Stato Venditore: <?php echo ucfirst($user['statoVendita']); ?>
@@ -95,7 +96,8 @@ $inserzioni = $stmt_ins->get_result();
 
                 <div style="text-align: right;">
                     <div style="font-size: 36px; font-weight: bold;">⭐
-                        <?php echo $feedback['media'] ? number_format($feedback['media'], 1) : "0.0"; ?></div>
+                        <?php echo $feedback['media'] ? number_format($feedback['media'], 1) : "0.0"; ?>
+                    </div>
                     <div style="font-size: 14px; color: #9ca3af;"><?php echo $feedback['num']; ?> recensioni ricevute
                     </div>
                 </div>
@@ -119,7 +121,8 @@ $inserzioni = $stmt_ins->get_result();
                 <?php while ($ins = $inserzioni->fetch_assoc()): ?>
                     <a href="inserzione.php?id=<?php echo $ins['idInserzione']; ?>" class="ins-item">
                         <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #111827;">
-                            <?php echo htmlspecialchars($ins['titolo']); ?></h3>
+                            <?php echo htmlspecialchars($ins['titolo']); ?>
+                        </h3>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span
                                 style="color: #059669; font-weight: 700; font-size: 18px;">€<?php echo number_format($ins['prezzoTotale'], 2); ?></span>
